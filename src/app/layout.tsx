@@ -27,12 +27,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`bg-slate-50 ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TopBarComponent />
         <div
           className="relative"
-        >{children}</div>
+        >
+          {/* Show what page the user is on */}
+          <div className="container mx-auto flex justify-between">
+            <h3 className="text-xl py-4 font-medium">
+              Dashboard
+            </h3>
+            
+          </div>
+          {children}</div>
       </body>
     </html>
   );
