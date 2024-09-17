@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { TopBarComponent } from "@/components/top-bar";
+import { BreadcrumbNavigation } from "@/components/breadcrumb";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,17 +31,13 @@ export default function RootLayout({
         className={`bg-slate-50 ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TopBarComponent />
-        <div
-          className="relative"
-        >
+        <div className="relative">
           {/* Show what page the user is on */}
-          <div className="container mx-auto flex justify-between">
-            <h3 className="text-xl py-4 font-medium">
-              Dashboard
-            </h3>
-            
+          <div className="container mx-auto px-4 py-4">
+              <BreadcrumbNavigation />
           </div>
-          {children}</div>
+          {children}
+        </div>
       </body>
     </html>
   );

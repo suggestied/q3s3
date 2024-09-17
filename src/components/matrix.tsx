@@ -65,7 +65,7 @@ export default function MatrixComponent({ machine, productionData }: MatrixProps
               <div className="flex items-center">
                 <BarChartIcon className="w-5 h-5 mr-2 text-gray-500" />
                 <span>
-                  Aanschafwaarde: €{machine.aanschafwaarde.toFixed(2)}
+                  Aanschafwaarde: €{machine.aanschafwaarde.toLocaleString("nl-NL")}
                 </span>
               </div>
             </div>

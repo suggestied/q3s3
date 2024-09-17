@@ -41,7 +41,7 @@ export function MachineComponent({ machine }: { machine: Machine }) {
           </div>
           <div className="flex items-center">
             <span className="text-sm font-semibold">
-              Aanschafwaarde: €{machine.aanschafwaarde.toFixed(2)}
+              Aanschafwaarde: €{machine.aanschafwaarde.toLocaleString("nl-NL")}
             </span>
           </div>
         </div>
