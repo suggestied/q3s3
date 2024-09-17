@@ -7,7 +7,7 @@ import { Machine, ProductionData } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 // Dummy data for demonstration purposes
 const dummyMachines: Machine[] = [
@@ -65,7 +65,6 @@ const dummyProductionData: ProductionData[] = [
 ];
 
 export default function MatrixPage() {
-  const [selectedMatrix, setSelectedMatrix] = useState<Machine | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredMachines, setFilteredMachines] = useState(dummyMachines);
 
@@ -83,7 +82,7 @@ export default function MatrixPage() {
 
       <h1 className="text-3xl font-bold mb-6">Matrices / Matrijzen</h1>
 
-      {!selectedMatrix && (
+      {(
         <>
           <div className="flex items-center space-x-2 mb-4">
             <Label htmlFor="search" className="sr-only">
