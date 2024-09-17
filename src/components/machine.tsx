@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, HammerIcon, SettingsIcon } from "lucide-react";
+import Link from "next/link";
 
 export function MachineComponent({ machine }: { machine: Machine }) {
   return (
@@ -46,9 +47,12 @@ export function MachineComponent({ machine }: { machine: Machine }) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
+        <Link href={`/machines/${machine.id}`}>
+
         <Button variant="outline" size="sm">
           Details
         </Button>
+        </Link>
         <Button variant="default" size="sm">
           Bewerk
         </Button>
