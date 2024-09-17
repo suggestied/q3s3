@@ -80,18 +80,18 @@ export default function MatrixPage() {
   return (
     <div className="container mx-auto py-8">
 
-      <h1 className="text-3xl font-bold mb-6">Matrices / Matrijzen</h1>
+      <h1 className="text-3xl font-bold mb-6">Matrices</h1>
 
       {(
         <>
           <div className="flex items-center space-x-2 mb-4">
             <Label htmlFor="search" className="sr-only">
-              Zoek matrices
+              Search matrices
             </Label>
             <Input
               id="search"
               type="search"
-              placeholder="Zoek op naam of serienummer"
+              placeholder="Search matrices..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
