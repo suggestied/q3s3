@@ -3,6 +3,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
+
 export function TopBarComponent() {
   // array of urls and page names
   const pages = [
@@ -10,6 +11,8 @@ export function TopBarComponent() {
     {url: "/machines", name: "Machines"},
     {url: "/matrix", name: "Matrix"},
   ];
+
+
   
   return (
     <div className="relative">
@@ -20,11 +23,7 @@ export function TopBarComponent() {
             <a
               key={page.url}
               href={page.url}
-              className={`text-white font-mono hover:text-gray-200 ${
-                page.url === location.pathname
-                  ? "underline underline-offset-4"
-                  : ""
-              }`}
+              className={`text-white font-mono hover:text-gray-200`}
             >
               {page.name}
             </a>
