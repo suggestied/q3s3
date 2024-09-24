@@ -11,6 +11,7 @@ export function TopBarComponent() {
     {url: "/machines", name: "Machines"},
     {url: "/matrix", name: "Matrix"},
   ];
+  
 
 
   

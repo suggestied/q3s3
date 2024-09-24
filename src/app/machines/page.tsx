@@ -43,7 +43,7 @@ export default function Page() {
       try {
         setLoading(true);
         const response = await fetch(
-          `https://q4api.keke.ceo/api/pure/list?skip=${
+          `https://q4api.keke.ceo/v1/pure/list?skip=${
             (currentPage - 1) * itemsPerPage
           }&limit=${itemsPerPage}`
         );
