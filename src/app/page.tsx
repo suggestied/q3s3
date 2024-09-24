@@ -1,15 +1,35 @@
 import MoldHistoryChart from "@/components/mold-history-chart";
 
-export default function Home() {
-  const moldIds = [262, 267, 304, 275, 297, 272];
+interface Mold {
+  board: string;
+  port: string;
+  start: string;
+  machine: number;
+  hothalf: number;
+}
+
+// Server component - no "use client" directive
+export default async function Home() {
+  // Fetch data on the server side
+  const response = await fetch(
+    "https://q4api.keke.ceo/v1/machine/all/molds/current",
+    {
+      cache: "no-store", // Avoid caching the data on the server
+    }
+  );
+
+  const molds: Mold[] = await response.json();
+
   return (
     <div className="container mx-auto">
       <div className="grid grid-cols-3 gap-4">
-        {
-          moldIds.map((id) => (
-            <MoldHistoryChart key={id} id={id} />
-          ))
-        }
+        {molds.map((mold) => (
+          <MoldHistoryChart
+            key={mold.machine}
+            board={mold.board}
+            port={mold.port}
+          />
+        ))}
       </div>
     </div>
   );
