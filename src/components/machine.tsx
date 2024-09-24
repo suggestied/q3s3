@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Machine } from "@/types";
 import {
-  AlertTriangle,
   Activity,
   CogIcon,
   Calendar,
