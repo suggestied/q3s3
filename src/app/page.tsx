@@ -22,7 +22,7 @@ export default async function Home() {
 
   return (
     <div className="container mx-auto">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid lg:grid-cols-3 gap-4">
         {molds.map((mold) => (
           <MoldHistoryChart
             key={mold.machine}
