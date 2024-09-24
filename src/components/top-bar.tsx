@@ -28,7 +28,7 @@ export function TopBarComponent() {
               <a
                 key={page.url}
                 href={page.url}
-                className="text-white font-mono hover:text-orange-100 transition-all duration-300 ease-in-out text-lg hover:scale-105 transform inline-block"
+                className="text-white hover:text-orange-100 transition-all duration-300 ease-in-out text-lg hover:scale-105 transform inline-block"
               >
                 {page.name}
               </a>
@@ -65,7 +65,7 @@ export function TopBarComponent() {
                   <a
                     key={page.url}
                     href={page.url}
-                    className="text-orange-700 font-mono hover:text-orange-500 transition-all duration-300 ease-in-out text-lg hover:translate-x-2 transform inline-block"
+                    className="text-orange-700 hover:text-orange-500 transition-all duration-300 ease-in-out text-lg hover:translate-x-2 transform inline-block"
                     onClick={() => setIsOpen(false)}
                   >
                     {page.name}

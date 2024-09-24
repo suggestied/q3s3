@@ -7,9 +7,8 @@ import { Machine } from "@/types";
 import {
   Activity,
   CogIcon,
-  Calendar,
-  Zap,
-  FileText,
+  BoxIcon,
+  EyeIcon,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -405,8 +404,8 @@ export function MachineComponent({ machine }: MachineComponentProps) {
                   variant="outline"
                   className="w-full bg-gray-50 text-gray-800 hover:bg-gray-100 border-gray-200"
                 >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule
+                  <BoxIcon className="w-4 h-4 mr-2" />
+                  All Molds
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -415,39 +414,24 @@ export function MachineComponent({ machine }: MachineComponentProps) {
             </Tooltip>
           </TooltipProvider>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full bg-gray-50 text-gray-800 hover:bg-gray-100 border-gray-200"
-                >
-                  <Zap className="w-4 h-4 mr-2" />
-                  Usage
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>View usage statistics</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full bg-gray-50 text-gray-800 hover:bg-gray-100 border-gray-200"
-                >
-                  <FileText className="w-4 h-4 mr-2" />
-                  Reports
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Generate reports</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="col-span-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="default"
+                    className="w-full "
+                  >
+                    <EyeIcon className="w-4 h-4 mr-2" />
+                    View more
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>View usage statistics</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
 
         {/* {machine.keuringsplichtig > 0 && (
