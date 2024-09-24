@@ -135,22 +135,7 @@ export default function Page() {
           </div>
         </CardContent>
       </Card>
-      {Array.isArray(machines) && machines.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {machines.map((machine) => (
-            <MachineComponent key={machine.id} machine={machine} />
-          ))}
-        </div>
-      ) : (
-        <Card className="mt-6">
-          <CardContent className="flex items-center justify-center h-32">
-            <p className="text-center text-muted-foreground">
-              No machines found.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-      <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="m-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">Items per page:</span>
           <Select
@@ -170,7 +155,6 @@ export default function Page() {
         </div>
         <div className="flex items-center gap-2">
           <Button
-            variant="outline"
             size="icon"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
@@ -181,7 +165,6 @@ export default function Page() {
             Page {currentPage} of {totalPages}
           </span>
           <Button
-            variant="outline"
             size="icon"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
@@ -190,6 +173,21 @@ export default function Page() {
           </Button>
         </div>
       </div>
+      {Array.isArray(machines) && machines.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {machines.map((machine) => (
+            <MachineComponent key={machine.id} machine={machine} />
+          ))}
+        </div>
+      ) : (
+        <Card className="mt-6">
+          <CardContent className="flex items-center justify-center h-32">
+            <p className="text-center text-muted-foreground">
+              No machines found.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

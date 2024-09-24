@@ -451,12 +451,12 @@ export function MachineComponent({ machine }: MachineComponentProps) {
           </TooltipProvider>
         </div>
 
-        {machine.keuringsplichtig && (
+        {/* {machine.keuringsplichtig > 0 && (
           <div className="mt-4 flex items-center text-yellow-600">
             <AlertTriangle className="w-5 h-5 mr-2" />
             <span>Inspection Required</span>
           </div>
-        )}
+        )} */}
       </CardContent>
     </Card>
   );
