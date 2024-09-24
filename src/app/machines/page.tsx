@@ -135,11 +135,12 @@ export default function Page() {
           </div>
         </CardContent>
       </Card>
-      <div className="m-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="m-4 flex flex-col sm:flex-row items-center justify-between text-black gap-4">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">Items per page:</span>
           <Select
             value={itemsPerPage.toString()}
+            
             onValueChange={handleItemsPerPageChange}
           >
             <SelectTrigger className="w-[70px]">
