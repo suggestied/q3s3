@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { format } from "date-fns";
+import { AlertTriangle, CheckCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface MonitoringData {
   timestamp: string;
@@ -42,6 +44,7 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<string>("all");
   const [threshold, setThreshold] = useState<number>(5);
+  const [maintenanceThreshold, setMaintenanceThreshold] = useState<number>(10);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -101,25 +104,48 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
     max: Math.max(...filteredData.map((item) => item.duration)),
     outOfThreshold: filteredData.filter((item) => item.duration > threshold)
       .length,
+    maintenanceNeeded: filteredData.filter(
+      (item) => item.duration > maintenanceThreshold
+    ).length,
   };
+
+  const maintenanceStatus =
+    stats.maintenanceNeeded > 0 ? "needed" : "not needed";
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const dataPoint = payload[0].payload;
       const isOverThreshold = dataPoint.duration > threshold;
+      const needsMaintenance = dataPoint.duration > maintenanceThreshold;
       return (
         <div
           className={`bg-white p-2 border ${
-            isOverThreshold ? "border-red-500" : "border-green-500"
+            needsMaintenance
+              ? "border-red-500"
+              : isOverThreshold
+              ? "border-yellow-500"
+              : "border-green-500"
           } rounded shadow`}
         >
           <p className="font-bold">
             {format(new Date(label), "dd/MM/yyyy HH:mm:ss")}
           </p>
-          <p className={isOverThreshold ? "text-red-500" : "text-green-500"}>
+          <p
+            className={
+              needsMaintenance
+                ? "text-red-500"
+                : isOverThreshold
+                ? "text-yellow-500"
+                : "text-green-500"
+            }
+          >
             Duration: {dataPoint.duration.toFixed(2)}s
-            {isOverThreshold ? " (Over Threshold)" : ""}
+            {needsMaintenance
+              ? " (Maintenance Needed)"
+              : isOverThreshold
+              ? " (Over Threshold)"
+              : ""}
           </p>
         </div>
       );
@@ -128,7 +154,7 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
           <span>
@@ -154,6 +180,32 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
       </CardHeader>
       <CardContent>
         {error && <p className="text-red-500 mb-4">{error}</p>}
+        <Alert
+          className={
+            maintenanceStatus === "needed"
+              ? "bg-red-100 mb-4"
+              : "bg-green-100 mb-4"
+          }
+        >
+          <AlertTriangle
+            className={
+              maintenanceStatus === "needed" ? "h-4 w-4 text-red-500" : "hidden"
+            }
+          />
+          <CheckCircle
+            className={
+              maintenanceStatus === "not needed"
+                ? "h-4 w-4 text-green-500"
+                : "hidden"
+            }
+          />
+          <AlertTitle>Maintenance Status</AlertTitle>
+          <AlertDescription>
+            {maintenanceStatus === "needed"
+              ? `Maintenance is needed. ${stats.maintenanceNeeded} readings exceeded the maintenance threshold.`
+              : "No maintenance is currently needed."}
+          </AlertDescription>
+        </Alert>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <Card>
             <CardHeader>
@@ -213,9 +265,15 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
               <Tooltip content={<CustomTooltip />} />
               <ReferenceLine
                 y={threshold}
-                stroke="red"
+                stroke="yellow"
                 strokeDasharray="3 3"
                 label={`Threshold: ${threshold}s`}
+              />
+              <ReferenceLine
+                y={maintenanceThreshold}
+                stroke="red"
+                strokeDasharray="3 3"
+                label={`Maintenance Threshold: ${maintenanceThreshold}s`}
               />
               <Line
                 type="monotone"
@@ -240,6 +298,19 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
             step={0.1}
             value={[threshold]}
             onValueChange={(value) => setThreshold(value[0])}
+          />
+        </div>
+        <div className="mt-4 space-y-2">
+          <Label htmlFor="maintenanceThreshold">
+            Maintenance Threshold: {maintenanceThreshold.toFixed(2)} seconds
+          </Label>
+          <Slider
+            id="maintenanceThreshold"
+            min={0}
+            max={Math.max(15, stats.max)}
+            step={0.1}
+            value={[maintenanceThreshold]}
+            onValueChange={(value) => setMaintenanceThreshold(value[0])}
           />
         </div>
       </CardContent>
