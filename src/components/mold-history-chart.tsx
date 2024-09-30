@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
+  Brush,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,8 +25,15 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { format } from "date-fns";
-import { AlertTriangle, CheckCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle,
+  DownloadCloud,
+  RefreshCw,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 
 interface MonitoringData {
   timestamp: string;
@@ -45,18 +53,30 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
   const [timeRange, setTimeRange] = useState<string>("all");
   const [threshold, setThreshold] = useState<number>(5);
   const [maintenanceThreshold, setMaintenanceThreshold] = useState<number>(10);
+  const [autoRefresh, setAutoRefresh] = useState<boolean>(false);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await fetch(
-        `https://q4api.keke.ceo/v1/monitoring?board=${board}&port=${port}&skip=0&limit=1000`
+        `https://q4api.keke.ceo/v1/monitoring?board=${encodeURIComponent(
+          board
+        )}&port=${encodeURIComponent(port)}&skip=0&limit=1000`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        }
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch monitoring data");
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       const jsonData: MonitoringData[] = await response.json();
+      if (!Array.isArray(jsonData)) {
+        throw new Error("Received data is not an array");
+      }
       setData(
         jsonData.sort(
           (a, b) =>
@@ -64,7 +84,12 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
         )
       );
     } catch (err) {
-      setError("Failed to fetch monitoring data. Please try again later.");
+      console.error("Error fetching data:", err);
+      setError(
+        `Failed to fetch monitoring data: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -74,40 +99,63 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
     fetchData();
   }, [fetchData]);
 
-  const filteredData = data.filter((item) => {
-    if (timeRange === "all") return true;
-    const itemDate = new Date(item.timestamp);
-    const oldestDate = new Date(data[0].timestamp);
-    const timeDiff = itemDate.getTime() - oldestDate.getTime();
-    const daysDiff = timeDiff / (1000 * 3600 * 24);
-    switch (timeRange) {
-      case "1d":
-        return daysDiff <= 1;
-      case "7d":
-        return daysDiff <= 7;
-      case "30d":
-        return daysDiff <= 30;
-      default:
-        return true;
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (autoRefresh) {
+      intervalId = setInterval(fetchData, 60000); // Refresh every minute
     }
-  });
+    return () => clearInterval(intervalId);
+  }, [autoRefresh, fetchData]);
+
+  const filteredData = useMemo(() => {
+    const now = new Date();
+    return data.filter((item) => {
+      if (timeRange === "all") return true;
+      const itemDate = new Date(item.timestamp);
+      const timeDiff = now.getTime() - itemDate.getTime();
+      const daysDiff = timeDiff / (1000 * 3600 * 24);
+      switch (timeRange) {
+        case "1d":
+          return daysDiff <= 1;
+        case "7d":
+          return daysDiff <= 7;
+        case "30d":
+          return daysDiff <= 30;
+        default:
+          return true;
+      }
+    });
+  }, [data, timeRange]);
 
   const formatXAxis = (tickItem: string) => {
     return format(new Date(tickItem), "dd/MM/yyyy HH:mm");
   };
 
-  const stats = {
-    avg:
-      filteredData.reduce((sum, item) => sum + item.duration, 0) /
-      filteredData.length,
-    min: Math.min(...filteredData.map((item) => item.duration)),
-    max: Math.max(...filteredData.map((item) => item.duration)),
-    outOfThreshold: filteredData.filter((item) => item.duration > threshold)
-      .length,
-    maintenanceNeeded: filteredData.filter(
-      (item) => item.duration > maintenanceThreshold
-    ).length,
-  };
+  const stats = useMemo(() => {
+    if (filteredData.length === 0) {
+      return {
+        avg: 0,
+        min: 0,
+        max: 0,
+        outOfThreshold: 0,
+        maintenanceNeeded: 0,
+        totalReadings: 0,
+      };
+    }
+    return {
+      avg:
+        filteredData.reduce((sum, item) => sum + item.duration, 0) /
+        filteredData.length,
+      min: Math.min(...filteredData.map((item) => item.duration)),
+      max: Math.max(...filteredData.map((item) => item.duration)),
+      outOfThreshold: filteredData.filter((item) => item.duration > threshold)
+        .length,
+      maintenanceNeeded: filteredData.filter(
+        (item) => item.duration > maintenanceThreshold
+      ).length,
+      totalReadings: filteredData.length,
+    };
+  }, [filteredData, threshold, maintenanceThreshold]);
 
   const maintenanceStatus =
     stats.maintenanceNeeded > 0 ? "needed" : "not needed";
@@ -153,8 +201,22 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
     return null;
   };
 
+  const handleExportData = () => {
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      "Timestamp,Duration\n" +
+      filteredData.map((row) => `${row.timestamp},${row.duration}`).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `monitoring_data_${board}_${port}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <Card className="w-full">
+    <Card className="w-full ">
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
           <span>
@@ -173,120 +235,177 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
               </SelectContent>
             </Select>
             <Button onClick={fetchData} disabled={isLoading}>
+              <RefreshCw className="mr-2 h-4 w-4" />
               {isLoading ? "Loading..." : "Refresh"}
+            </Button>
+            <Button onClick={() => setAutoRefresh(!autoRefresh)}>
+              {autoRefresh ? "Disable Auto-refresh" : "Enable Auto-refresh"}
             </Button>
           </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        <Alert
-          className={
-            maintenanceStatus === "needed"
-              ? "bg-red-100 mb-4"
-              : "bg-green-100 mb-4"
-          }
-        >
-          <AlertTriangle
-            className={
-              maintenanceStatus === "needed" ? "h-4 w-4 text-red-500" : "hidden"
-            }
-          />
-          <CheckCircle
-            className={
-              maintenanceStatus === "not needed"
-                ? "h-4 w-4 text-green-500"
-                : "hidden"
-            }
-          />
-          <AlertTitle>Maintenance Status</AlertTitle>
-          <AlertDescription>
-            {maintenanceStatus === "needed"
-              ? `Maintenance is needed. ${stats.maintenanceNeeded} readings exceeded the maintenance threshold.`
-              : "No maintenance is currently needed."}
-          </AlertDescription>
-        </Alert>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Average</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{stats.avg.toFixed(2)}s</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Minimum</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{stats.min.toFixed(2)}s</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Maximum</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{stats.max.toFixed(2)}s</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Out of Threshold</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{stats.outOfThreshold}</p>
-            </CardContent>
-          </Card>
-        </div>
-        {isLoading && filteredData.length === 0 ? (
-          <Skeleton className="h-[400px] w-full" />
-        ) : (
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart
-              data={filteredData}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="timestamp"
-                tickFormatter={formatXAxis}
-                angle={-45}
-                textAnchor="end"
-                height={70}
-              />
-              <YAxis />
-              <Tooltip content={<CustomTooltip />} />
-              <ReferenceLine
-                y={threshold}
-                stroke="yellow"
-                strokeDasharray="3 3"
-                label={`Threshold: ${threshold}s`}
-              />
-              <ReferenceLine
-                y={maintenanceThreshold}
-                stroke="red"
-                strokeDasharray="3 3"
-                label={`Maintenance Threshold: ${maintenanceThreshold}s`}
-              />
-              <Line
-                type="monotone"
-                dataKey="duration"
-                stroke="#8884d8"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 8 }}
-                name="Duration"
-              />
-            </LineChart>
-          </ResponsiveContainer>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
+        {!error && (
+          <Alert
+            className={
+              maintenanceStatus === "needed"
+                ? "bg-red-100 mb-4"
+                : "bg-green-100 mb-4"
+            }
+          >
+            <AlertTriangle
+              className={
+                maintenanceStatus === "needed"
+                  ? "h-4 w-4 text-red-500"
+                  : "hidden"
+              }
+            />
+            <CheckCircle
+              className={
+                maintenanceStatus === "not needed"
+                  ? "h-4 w-4 text-green-500"
+                  : "hidden"
+              }
+            />
+            <AlertTitle>Maintenance Status</AlertTitle>
+            <AlertDescription>
+              {maintenanceStatus === "needed"
+                ? `Maintenance is needed. ${stats.maintenanceNeeded} readings exceeded the maintenance threshold.`
+                : "No maintenance is currently needed."}
+            </AlertDescription>
+          </Alert>
+        )}
+        <Tabs defaultValue="chart" className="mb-4">
+          <TabsList>
+            <TabsTrigger value="chart">Chart</TabsTrigger>
+            <TabsTrigger value="stats">Statistics</TabsTrigger>
+          </TabsList>
+          <TabsContent value="chart">
+            {isLoading ? (
+              <Skeleton className="h-[400px] w-full" />
+            ) : filteredData.length === 0 ? (
+              <p className="text-center text-gray-500 py-8">
+                No data available for the selected time range.
+              </p>
+            ) : (
+              <ResponsiveContainer width="100%" height={400}>
+                <LineChart
+                  data={filteredData}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="timestamp"
+                    tickFormatter={formatXAxis}
+                    angle={-45}
+                    textAnchor="end"
+                    height={70}
+                  />
+                  <YAxis />
+                  <Tooltip content={<CustomTooltip />} />
+                  <ReferenceLine
+                    y={threshold}
+                    stroke="yellow"
+                    strokeDasharray="3 3"
+                    label={`Threshold: ${threshold}s`}
+                  />
+                  <ReferenceLine
+                    y={maintenanceThreshold}
+                    stroke="red"
+                    strokeDasharray="3 3"
+                    label={`Maintenance Threshold: ${maintenanceThreshold}s`}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="duration"
+                    stroke="#8884d8"
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 8 }}
+                    name="Duration"
+                  />
+                  <Brush dataKey="timestamp" height={30} stroke="#8884d8" />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </TabsContent>
+          <TabsContent value="stats">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Average</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">{stats.avg.toFixed(2)}s</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Minimum</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">{stats.min.toFixed(2)}s</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Maximum</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">{stats.max.toFixed(2)}s</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Out of Threshold</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">{stats.outOfThreshold}</p>
+                  <Progress
+                    value={(stats.outOfThreshold / stats.totalReadings) * 100}
+                    className="mt-2"
+                  />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Maintenance Needed</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">
+                    {stats.maintenanceNeeded}
+                  </p>
+                  <Progress
+                    value={
+                      (stats.maintenanceNeeded / stats.totalReadings) * 100
+                    }
+                    className="mt-2"
+                  />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Total Readings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">{stats.totalReadings}</p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
         <div className="mt-4 space-y-2">
           <Label htmlFor="threshold">
             Threshold: {threshold.toFixed(2)} seconds
@@ -312,6 +431,15 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
             value={[maintenanceThreshold]}
             onValueChange={(value) => setMaintenanceThreshold(value[0])}
           />
+        </div>
+        <div className="mt-4">
+          <Button
+            onClick={handleExportData}
+            disabled={filteredData.length === 0}
+          >
+            <DownloadCloud className="mr-2 h-4 w-4" />
+            Export Data
+          </Button>
         </div>
       </CardContent>
     </Card>
