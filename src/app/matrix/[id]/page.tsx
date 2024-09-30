@@ -1,5 +1,5 @@
 // simple wip page
-export function MatrixPage() {
+export default function Page() {
   return (
     <div>
       <h1>Matrix</h1>
