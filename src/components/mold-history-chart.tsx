@@ -30,10 +30,16 @@ import {
   CheckCircle,
   DownloadCloud,
   RefreshCw,
+  Settings,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface MonitoringData {
   timestamp: string;
@@ -54,6 +60,7 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
   const [threshold, setThreshold] = useState<number>(5);
   const [maintenanceThreshold, setMaintenanceThreshold] = useState<number>(10);
   const [autoRefresh, setAutoRefresh] = useState<boolean>(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -216,13 +223,62 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
   };
 
   return (
-    <Card className="w-full ">
+    <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle className="flex justify-between items-center">
-          <span>
+        <CardTitle className="flex justify-between items-center gap-2">
+          <div className="w-full">
             Monitoring - Board {board}, Port {port}
-          </span>
-          <div className="flex items-center space-x-2">
+          </div>
+
+          <div>
+            <Collapsible
+              open={isSettingsOpen}
+              onOpenChange={setIsSettingsOpen}
+              className="space-y-2"
+            >
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Settings className="h-4 w-4" />
+                  <span className="sr-only">Toggle settings</span>
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-2 absolute z-50">
+                <Card className="w-full flex flex-col gap-4 p-4">
+                  <div className="rounded-md border px-4 py-3 font-mono text-sm">
+                    <Label htmlFor="threshold" className="text-xs">
+                      Threshold: {threshold.toFixed(2)} seconds
+                    </Label>
+                    <Slider
+                      id="threshold"
+                      min={0}
+                      max={Math.max(10, stats.max)}
+                      step={0.1}
+                      value={[threshold]}
+                      onValueChange={(value) => setThreshold(value[0])}
+                    />
+                  </div>
+                  <div className="rounded-md border px-4 py-3 font-mono text-sm">
+                    <Label htmlFor="maintenanceThreshold" className="text-xs">
+                      Maintenance Threshold: {maintenanceThreshold.toFixed(2)}{" "}
+                      seconds
+                    </Label>
+                    <Slider
+                      id="maintenanceThreshold"
+                      min={0}
+                      max={Math.max(15, stats.max)}
+                      step={0.1}
+                      value={[maintenanceThreshold]}
+                      onValueChange={(value) =>
+                        setMaintenanceThreshold(value[0])
+                      }
+                    />
+                  </div>
+                </Card>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+
+          <div className="flex w-min items-center space-x-2">
             <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select time range" />
@@ -406,32 +462,6 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
             </div>
           </TabsContent>
         </Tabs>
-        <div className="mt-4 space-y-2">
-          <Label htmlFor="threshold">
-            Threshold: {threshold.toFixed(2)} seconds
-          </Label>
-          <Slider
-            id="threshold"
-            min={0}
-            max={Math.max(10, stats.max)}
-            step={0.1}
-            value={[threshold]}
-            onValueChange={(value) => setThreshold(value[0])}
-          />
-        </div>
-        <div className="mt-4 space-y-2">
-          <Label htmlFor="maintenanceThreshold">
-            Maintenance Threshold: {maintenanceThreshold.toFixed(2)} seconds
-          </Label>
-          <Slider
-            id="maintenanceThreshold"
-            min={0}
-            max={Math.max(15, stats.max)}
-            step={0.1}
-            value={[maintenanceThreshold]}
-            onValueChange={(value) => setMaintenanceThreshold(value[0])}
-          />
-        </div>
         <div className="mt-4">
           <Button
             onClick={handleExportData}
