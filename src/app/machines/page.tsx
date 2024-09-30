@@ -11,6 +11,7 @@ import {
   SlidersHorizontal,
   ChevronLeft,
   ChevronRight,
+  Calendar,
 } from "lucide-react";
 import { Machine } from "@/types";
 import {
@@ -27,33 +28,47 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+
+import { format } from "date-fns";
 
 export default function Page() {
   const [machines, setMachines] = useState<Machine[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<keyof Machine>("naam");
+  const [sortBy, setSortBy] = useState<keyof Machine>("name");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
+  const [timeStart, setTimeStart] = useState<Date | null>(null);
+  const [timeEnd, setTimeEnd] = useState<Date | null>(null);
 
   useEffect(() => {
     const fetchMachines = async () => {
       try {
         setLoading(true);
+        const params = new URLSearchParams({
+          skip: ((currentPage - 1) * itemsPerPage).toString(),
+          limit: itemsPerPage.toString(),
+        });
+        if (timeStart) params.append("timeStart", timeStart.toISOString());
+        if (timeEnd) params.append("timeEnd", timeEnd.toISOString());
+
         const response = await fetch(
-          `https://q4api.keke.ceo/v1/pure/list?skip=${
-            (currentPage - 1) * itemsPerPage
-          }&limit=${itemsPerPage}`
+          `https://q4api.keke.ceo/EfTest/machine/list?${params.toString()}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
         const data = await response.json();
         setMachines(data);
-        setTotalItems(100);
-        //log
+        setTotalItems(data.totalCount || 0);
         setLoading(false);
       } catch (err) {
         setError("An error occurred while fetching data");
@@ -62,8 +77,7 @@ export default function Page() {
     };
 
     fetchMachines();
-  }, [currentPage, itemsPerPage]);
-
+  }, [currentPage, itemsPerPage, timeStart, timeEnd]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -124,6 +138,38 @@ export default function Page() {
                 <SelectItem value="actief">Active Status</SelectItem>
               </SelectContent>
             </Select>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {timeStart ? format(timeStart, "PP") : "Start Date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <CalendarComponent
+                  mode="single"
+                  selected={timeStart || undefined}
+                  onSelect={(day) => day && setTimeStart(day)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {timeEnd ? format(timeEnd, "PP") : "End Date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <CalendarComponent
+                  mode="single"
+                  selected={timeEnd || undefined}
+                  onSelect={(day) => day && setTimeEnd(day)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
               Add Machine
@@ -140,7 +186,6 @@ export default function Page() {
           <span className="text-sm text-gray-600">Items per page:</span>
           <Select
             value={itemsPerPage.toString()}
-            
             onValueChange={handleItemsPerPageChange}
           >
             <SelectTrigger className="w-[70px]">
@@ -174,7 +219,7 @@ export default function Page() {
           </Button>
         </div>
       </div>
-      {Array.isArray(machines) && machines.length > 0 ? (
+      {machines.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {machines.map((machine) => (
             <MachineComponent key={machine.id} machine={machine} />
