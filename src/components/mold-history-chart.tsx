@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -43,8 +44,10 @@ import {
 
 interface MonitoringData {
   timestamp: string;
-  id: number;
+  codes: number[];
   duration: number;
+  machine: number;
+  mold: number;
 }
 
 interface Props {
@@ -52,24 +55,29 @@ interface Props {
   port: string;
 }
 
+interface ApiResponse {
+  board: string;
+  port: string;
+  usage: MonitoringData[];
+}
+
 export default function EnhancedMonitoringDashboard({ board, port }: Props) {
   const [data, setData] = useState<MonitoringData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<string>("all");
-  const [threshold, setThreshold] = useState<number>(5);
   const [maintenanceThreshold, setMaintenanceThreshold] = useState<number>(10);
   const [autoRefresh, setAutoRefresh] = useState<boolean>(false);
+  const [refreshInterval, setRefreshInterval] = useState<number>(60);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [chartKey, setChartKey] = useState<number>(0);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await fetch(
-        `https://q4api.keke.ceo/v1/monitoring?board=${encodeURIComponent(
-          board
-        )}&port=${encodeURIComponent(port)}&skip=0&limit=1000`,
+        `https://q4api.keke.ceo/EfTest/monitor/${board}/${port}?skip=0&limit=100&filterStart=2020-01-01%2000%3A00%3A00&filterEnd=2025-01-01%2000%3A00%3A00`,
         {
           method: "GET",
           headers: {
@@ -80,16 +88,15 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const jsonData: MonitoringData[] = await response.json();
-      if (!Array.isArray(jsonData)) {
-        throw new Error("Received data is not an array");
-      }
+      const jsonData = (await response.json()) as ApiResponse;
+
       setData(
-        jsonData.sort(
-          (a, b) =>
+        jsonData.usage.sort(
+          (a: MonitoringData, b: MonitoringData) =>
             new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         )
       );
+      setChartKey((prevKey) => prevKey + 1);
     } catch (err) {
       console.error("Error fetching data:", err);
       setError(
@@ -109,10 +116,10 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
     if (autoRefresh) {
-      intervalId = setInterval(fetchData, 60000); // Refresh every minute
+      intervalId = setInterval(fetchData, refreshInterval * 1000);
     }
     return () => clearInterval(intervalId);
-  }, [autoRefresh, fetchData]);
+  }, [autoRefresh, fetchData, refreshInterval]);
 
   const filteredData = useMemo(() => {
     const now = new Date();
@@ -144,7 +151,6 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
         avg: 0,
         min: 0,
         max: 0,
-        outOfThreshold: 0,
         maintenanceNeeded: 0,
         totalReadings: 0,
       };
@@ -155,14 +161,12 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
         filteredData.length,
       min: Math.min(...filteredData.map((item) => item.duration)),
       max: Math.max(...filteredData.map((item) => item.duration)),
-      outOfThreshold: filteredData.filter((item) => item.duration > threshold)
-        .length,
       maintenanceNeeded: filteredData.filter(
         (item) => item.duration > maintenanceThreshold
       ).length,
       totalReadings: filteredData.length,
     };
-  }, [filteredData, threshold, maintenanceThreshold]);
+  }, [filteredData, maintenanceThreshold]);
 
   const maintenanceStatus =
     stats.maintenanceNeeded > 0 ? "needed" : "not needed";
@@ -171,37 +175,23 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const dataPoint = payload[0].payload;
-      const isOverThreshold = dataPoint.duration > threshold;
       const needsMaintenance = dataPoint.duration > maintenanceThreshold;
       return (
         <div
           className={`bg-white p-2 border ${
-            needsMaintenance
-              ? "border-red-500"
-              : isOverThreshold
-              ? "border-yellow-500"
-              : "border-green-500"
+            needsMaintenance ? "border-red-500" : "border-green-500"
           } rounded shadow`}
         >
           <p className="font-bold">
             {format(new Date(label), "dd/MM/yyyy HH:mm:ss")}
           </p>
-          <p
-            className={
-              needsMaintenance
-                ? "text-red-500"
-                : isOverThreshold
-                ? "text-yellow-500"
-                : "text-green-500"
-            }
-          >
+          <p className={needsMaintenance ? "text-red-500" : "text-green-500"}>
             Duration: {dataPoint.duration.toFixed(2)}s
-            {needsMaintenance
-              ? " (Maintenance Needed)"
-              : isOverThreshold
-              ? " (Over Threshold)"
-              : ""}
+            {needsMaintenance ? " (Maintenance Needed)" : ""}
           </p>
+          <p>Machine: {dataPoint.machine}</p>
+          <p>Mold: {dataPoint.mold}</p>
+          <p>Codes: {dataPoint.codes.join(", ")}</p>
         </div>
       );
     }
@@ -211,8 +201,15 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
   const handleExportData = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
-      "Timestamp,Duration\n" +
-      filteredData.map((row) => `${row.timestamp},${row.duration}`).join("\n");
+      "Timestamp,Duration,Machine,Mold,Codes\n" +
+      filteredData
+        .map(
+          (row) =>
+            `${row.timestamp},${row.duration},${row.machine},${
+              row.mold
+            },${row.codes.join("|")}`
+        )
+        .join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -245,19 +242,6 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
               <CollapsibleContent className="space-y-2 absolute z-50">
                 <Card className="w-full flex flex-col gap-4 p-4">
                   <div className="rounded-md border px-4 py-3 font-mono text-sm">
-                    <Label htmlFor="threshold" className="text-xs">
-                      Threshold: {threshold.toFixed(2)} seconds
-                    </Label>
-                    <Slider
-                      id="threshold"
-                      min={0}
-                      max={Math.max(10, stats.max)}
-                      step={0.1}
-                      value={[threshold]}
-                      onValueChange={(value) => setThreshold(value[0])}
-                    />
-                  </div>
-                  <div className="rounded-md border px-4 py-3 font-mono text-sm">
                     <Label htmlFor="maintenanceThreshold" className="text-xs">
                       Maintenance Threshold: {maintenanceThreshold.toFixed(2)}{" "}
                       seconds
@@ -270,6 +254,20 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
                       value={[maintenanceThreshold]}
                       onValueChange={(value) =>
                         setMaintenanceThreshold(value[0])
+                      }
+                    />
+                  </div>
+                  <div className="rounded-md border px-4 py-3 font-mono text-sm">
+                    <Label htmlFor="refreshInterval" className="text-xs">
+                      Refresh Interval (seconds)
+                    </Label>
+                    <Input
+                      id="refreshInterval"
+                      type="number"
+                      min={1}
+                      value={refreshInterval}
+                      onChange={(e) =>
+                        setRefreshInterval(Number(e.target.value))
                       }
                     />
                   </div>
@@ -351,7 +349,7 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
                 No data available for the selected time range.
               </p>
             ) : (
-              <ResponsiveContainer width="100%" height={400}>
+              <ResponsiveContainer width="100%" height={400} key={chartKey}>
                 <LineChart
                   data={filteredData}
                   margin={{
@@ -371,12 +369,6 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
                   />
                   <YAxis />
                   <Tooltip content={<CustomTooltip />} />
-                  <ReferenceLine
-                    y={threshold}
-                    stroke="yellow"
-                    strokeDasharray="3 3"
-                    label={`Threshold: ${threshold}s`}
-                  />
                   <ReferenceLine
                     y={maintenanceThreshold}
                     stroke="red"
@@ -421,18 +413,6 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold">{stats.max.toFixed(2)}s</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">Out of Threshold</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold">{stats.outOfThreshold}</p>
-                  <Progress
-                    value={(stats.outOfThreshold / stats.totalReadings) * 100}
-                    className="mt-2"
-                  />
                 </CardContent>
               </Card>
               <Card>
