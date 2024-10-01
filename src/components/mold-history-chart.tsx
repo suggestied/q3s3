@@ -196,6 +196,13 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
     return null;
   };
 
+  // function to set the refresh interval
+  const handleRefreshInterval = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // check if its > 0
+    if (Number(e.target.value) > 0)
+    setRefreshInterval(Number(e.target.value));
+  };
+
   const handleExportData = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
@@ -264,9 +271,7 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
                       type="number"
                       min={1}
                       value={refreshInterval}
-                      onChange={(e) =>
-                        setRefreshInterval(Number(e.target.value))
-                      }
+                      onChange={handleRefreshInterval}
                     />
                   </div>
                 </Card>
