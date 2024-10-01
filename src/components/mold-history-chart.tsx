@@ -189,8 +189,6 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
             Duration: {dataPoint.duration.toFixed(2)}s
             {needsMaintenance ? " (Maintenance Needed)" : ""}
           </p>
-          <p>Machine: {dataPoint.machine}</p>
-          <p>Mold: {dataPoint.mold}</p>
           <p>Codes: {dataPoint.codes.join(", ")}</p>
         </div>
       );
