@@ -6,7 +6,6 @@ import {
   Activity,
   CogIcon,
   BoxIcon,
-  EyeIcon,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Link from "next/link";
+import MoldsDialog from "./molds-dialog";
 
 interface MachineComponentProps {
   machine: Machine;
@@ -98,10 +98,9 @@ export function MachineComponent({ machine }: MachineComponentProps) {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="default" className="w-full ">
-                    <EyeIcon className="w-4 h-4 mr-2" />
-                    View more
-                  </Button>
+                  
+
+                  <MoldsDialog machine_id={machine.id} />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>View usage statistics</p>
