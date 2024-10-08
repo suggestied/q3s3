@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Suspense } from "react";
 import MoldHistoryChart from "@/components/mold-history-chart";
 import { notFound } from "next/navigation";
@@ -16,7 +17,7 @@ interface PageProps {
 
 async function fetchMolds(id: string): Promise<Mold[]> {
   const response = await fetch(
-    `https://q4api.keke.ceo/v1/machine/${id}/molds/current`,
+    `https://${process.env.NEXT_PUBLIC_API_URL}/v1/machine/${id}/molds/current`,
     {
       cache: "no-store",
     }

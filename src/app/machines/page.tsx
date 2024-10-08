@@ -1,4 +1,5 @@
 "use client";
+import 'dotenv/config'
 
 import { useState, useEffect } from "react";
 import { MachineComponent } from "@/components/machine";
@@ -61,7 +62,7 @@ export default function Page() {
         if (timeEnd) params.append("timeEnd", timeEnd.toISOString());
 
         const response = await fetch(
-          `https://q4api.keke.ceo/EfTest/machine/list?${params.toString()}`
+          `/EfTest/machine/list?${params.toString()}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");

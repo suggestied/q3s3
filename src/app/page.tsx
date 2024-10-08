@@ -61,7 +61,9 @@ export default function Page() {
         if (timeEnd) params.append("timeEnd", timeEnd.toISOString());
 
         const response = await fetch(
-          `https://q4api.keke.ceo/EfTest/machine/list?${params.toString()}`
+          `https://${
+            process.env.NEXT_PUBLIC_API_URL
+          }/EfTest/machine/list?${params.toString()}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");

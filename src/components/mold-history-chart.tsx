@@ -1,4 +1,5 @@
 "use client";
+import "dotenv/config";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import {
@@ -77,7 +78,9 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
     setError(null);
     try {
       const response = await fetch(
-        `https://q4api.keke.ceo/EfTest/monitor/${board}/${port}?skip=0&limit=100&filterStart=2020-01-01%2000%3A00%3A00&filterEnd=2025-01-01%2000%3A00%3A00`,
+        `https://${
+          process.env.NEXT_PUBLIC_API_URL
+        }/EfTest/monitor/${board}/${port}?skip=0&limit=100&filterStart=2020-01-01%2000%3A00%3A00&filterEnd=2025-01-01%2000%3A00%3A00`,
         {
           method: "GET",
           headers: {
