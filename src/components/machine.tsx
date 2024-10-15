@@ -2,20 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Machine } from "@/types";
-import {
-  Activity,
-  BoxIcon,
-} from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import Link from "next/link";
-import MoldsDialog from "./molds-dialog";
+
 
 interface MachineComponentProps {
   machine: Machine;
@@ -24,73 +12,72 @@ interface MachineComponentProps {
 export function MachineComponent({ machine }: MachineComponentProps) {
 
   const calculateHealth = () => {
-    const health = 100;
+    const health = Math.floor(Math.random() * 100);
     return health;
   };
 
   const health = calculateHealth();
 
-  const getHealthColor = (health: number) => {
-    if (health > 70) return "text-green-600";
-    if (health > 40) return "text-yellow-600";
-    return "text-red-600";
+  const getHealthColor = (health: number, type: string) => {
+    // return the class based of the type
+    // bg, border, text
+    switch (type) {
+      case "bg":
+        if (health > 90) {
+          return "bg-green-500";
+        } else if (health > 70) {
+          return "bg-yellow-500";
+        } else {
+          return "bg-red-500";
+        }
+      case "border":
+        if (health > 90) {
+          return "border-green-500";
+        } else if (health > 70) {
+          return "border-yellow-500";
+        } else {
+          return "border-red-500";
+        }
+      case "text":
+        if (health > 90) {
+          return "text-green-500";
+        } else if (health > 70) {
+          return "text-yellow-500";
+        } else {
+          return "text-red-500";
+        }
+    }
   };
 
 
   return (
-    <Card className="w-full transition-all duration-300 ease-in-out hover:shadow-lg bg-white border-gray-200">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-xl font-bold text-gray-800">
-            {machine.name || "N/A"}
-          </CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center space-x-2 mb-4">
-          <Activity className={`w-5 h-5 ${getHealthColor(health)}`} />
-          <span className="font-medium text-gray-700">Machine Health:</span>
-          <Progress value={health} className="w-1/2" />
-          <span className={`text-sm font-medium ${getHealthColor(health)}`}>
-            {health}%
-          </span>
-        </div>
+    <div className="bg-white rounded-lg overflow-hidden">
+      <Card
+        className={`
+    border-2 ${getHealthColor(health, "border")} ${getHealthColor(health, "bg")} bg-opacity-20
+    `}
+      >
+        <CardHeader className="pb-2">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-xl font-bold text-gray-800">
+              {machine.name || "N/A"}
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Progress value={health} />
 
-        <div className="grid grid-cols-2 gap-2">
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link href={`/machines/${machine.id}/boards`}>
-                  <Button
-                    variant="outline"
-                    className="w-full bg-gray-50 text-gray-800 hover:bg-gray-100 border-gray-200"
-                  >
-                    <BoxIcon className="w-4 h-4 mr-2" />
-                    All Molds
-                  </Button>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>View machine schedule</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  
-
-                  <MoldsDialog machine_id={machine.id} />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>View usage statistics</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="flex justify-between items-center mt-2">
+            <div className="text-sm text-gray-600">Health</div>
+            <div
+              className={`text-sm font-bold ${getHealthColor(health, "text")}`}
+            >
+              {health}%
+            </div>
+          </div>
+          
+        </CardContent>
+      </Card>
+    </div>
   );
 }

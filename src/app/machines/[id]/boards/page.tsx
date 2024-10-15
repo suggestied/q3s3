@@ -59,6 +59,7 @@ export default async function Page({ params }: PageProps) {
             fallback={<div>Loading mold history...</div>}
           >
             <MoldHistoryChart board={mold.board} port={mold.port} />
+            
           </Suspense>
         ))}
       </div>
