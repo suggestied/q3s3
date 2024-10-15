@@ -13,10 +13,10 @@ interface MoldsDialogProps {
 const MoldsDialog: React.FC<MoldsDialogProps> = ({ machine_id }) => {
 
   return (
-    <div>
+    <div key={machine_id}>
       <Button variant="default" className="w-full ">
         <EyeIcon className="w-4 h-4 mr-2" />
-        View more {machine_id}
+        View
       </Button>
     </div>
   );

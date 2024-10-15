@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Machine } from "@/types";
 import {
   Activity,
-  CogIcon,
   BoxIcon,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -58,22 +57,6 @@ export function MachineComponent({ machine }: MachineComponentProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full bg-gray-50 text-gray-800 hover:bg-gray-100 border-gray-200"
-                >
-                  <CogIcon className="w-4 h-4 mr-2" />
-                  Maintenance
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Schedule maintenance</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
 
           <TooltipProvider>
             <Tooltip>
@@ -94,7 +77,6 @@ export function MachineComponent({ machine }: MachineComponentProps) {
             </Tooltip>
           </TooltipProvider>
 
-          <div className="col-span-2">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -107,15 +89,7 @@ export function MachineComponent({ machine }: MachineComponentProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          </div>
         </div>
-
-        {/* {machine.keuringsplichtig > 0 && (
-          <div className="mt-4 flex items-center text-yellow-600">
-            <AlertTriangle className="w-5 h-5 mr-2" />
-            <span>Inspection Required</span>
-          </div>
-        )} */}
       </CardContent>
     </Card>
   );
