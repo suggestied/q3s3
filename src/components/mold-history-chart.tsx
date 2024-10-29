@@ -80,7 +80,7 @@ export default function EnhancedMonitoringDashboard({ board, port }: Props) {
       const response = await fetch(
         `https://${
           process.env.NEXT_PUBLIC_API_URL
-        }/EfTest/monitor/${board}/${port}?skip=0&limit=100&filterStart=2020-01-01%2000%3A00%3A00&filterEnd=2025-01-01%2000%3A00%3A00`,
+        }/EfTest/monitor/${board}/${port}?skip=0&limit=10000&filterStart=2020-01-01%2000%3A00%3A00&filterEnd=2025-01-01%2000%3A00%3A00`,
         {
           method: "GET",
           headers: {

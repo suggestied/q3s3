@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Machine } from "@/types";
 import { Progress } from "@/components/ui/progress";
+import Link from "next/link";
 
 
 interface MachineComponentProps {
@@ -52,32 +53,39 @@ export function MachineComponent({ machine }: MachineComponentProps) {
 
   return (
     <div className="bg-white rounded-lg overflow-hidden">
-      <Card
-        className={`
-    border-2 ${getHealthColor(health, "border")} ${getHealthColor(health, "bg")} bg-opacity-20
+      <Link href={`/machines/${machine.id}/boards`}>
+        <Card
+          className={`
+    border-2 ${getHealthColor(health, "border")} ${getHealthColor(
+            health,
+            "bg"
+          )} bg-opacity-20
     `}
-      >
-        <CardHeader className="pb-2">
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-xl font-bold text-gray-800">
-              {machine.name || "N/A"}
-            </CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Progress value={health} />
-
-          <div className="flex justify-between items-center mt-2">
-            <div className="text-sm text-gray-600">Health</div>
-            <div
-              className={`text-sm font-bold ${getHealthColor(health, "text")}`}
-            >
-              {health}%
+        >
+          <CardHeader className="pb-2">
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-xl font-bold text-gray-800">
+                {machine.name || "N/A"}
+              </CardTitle>
             </div>
-          </div>
-          
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent>
+            <Progress value={health} />
+
+            <div className="flex justify-between items-center mt-2">
+              <div className="text-sm text-gray-600">Health</div>
+              <div
+                className={`text-sm font-bold ${getHealthColor(
+                  health,
+                  "text"
+                )}`}
+              >
+                {health}%
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
     </div>
   );
 }
