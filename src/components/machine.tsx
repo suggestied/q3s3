@@ -11,7 +11,6 @@ interface MachineComponentProps {
 }
 
 export function MachineComponent({ machine }: MachineComponentProps) {
-
   const calculateHealth = () => {
     // return bool or true
     const random = Math.floor(Math.random() * 100);
@@ -45,42 +44,45 @@ export function MachineComponent({ machine }: MachineComponentProps) {
     }
   };
 
-
   return (
-    <div className="bg-white rounded-lg overflow-hidden">
-      <Link href={`/machines/${machine.id}/boards`}>
-        <Card
-          className={`
-    border-2 ${getHealthColor(health, "border")} border-2 bg-opacity-20
+    <Link href={`/machines/${machine.id}/boards`} className="w-full h-full">
+      <Card
+        className={`
+    border-2 ${getHealthColor(
+      health,
+      "border"
+    )} border-opacity-40 border-2 bg-opacity-100 shadow h-full
     `}
-        >
-          <CardHeader>
-            <div className="flex flex-wrap justify-between items-center">
-              <div className="flex flex-col">
-                <CardTitle className="text-xl font-bold text-gray-800">
-                  {machine.name || "N/A"}
-                </CardTitle>
-                <div className="text-sm text-gray-500">
-                 N/A
-                  </div>
-              </div>
-
-              <Button
-                className={
-                  "text-sm font-semibold " + getHealthColor(health, "bg")
-                }
-                onClick={() => {
-                  console.log("clicked");
-                }}
-              >
-
-                {health ? "Active" : "Inactive"}
-                
-              </Button>
+      >
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <div className="flex flex-col mr-4">
+              <CardTitle className="text-xl font-bold text-gray-800">
+                {machine.name || "N/A"}
+              </CardTitle>
+              <ul className="text-sm text-gray-500">
+                <li>
+                  <span className="font-bold">Board:</span> 10
+                </li>
+                <li>
+                  <span className="font-bold">Port:</span> 32
+                </li>
+                </ul>
             </div>
-          </CardHeader>
-        </Card>
-      </Link>
-    </div>
+
+            <Button
+              className={
+                "text-sm font-semibold " + getHealthColor(health, "bg")
+              }
+              onClick={() => {
+                console.log("clicked");
+              }}
+            >
+              {health ? "Active" : "Inactive"}
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
+    </Link>
   );
 }

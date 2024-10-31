@@ -2,40 +2,27 @@
 
 import { useState, useEffect } from "react";
 import { MachineComponent } from "@/components/machine";
-import { Button } from "@/components/ui/button";
-import {
-  Loader2,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+
 import { Machine } from "@/types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import {
   Card,
   CardContent,
 } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 export default function Page() {
   const [machines, setMachines] = useState<Machine[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(50);
-  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     const fetchMachines = async () => {
       try {
         setLoading(true);
         const params = new URLSearchParams({
-          skip: ((currentPage - 1) * itemsPerPage).toString(),
-          limit: itemsPerPage.toString(),
+          skip: "0",
+          limit: "100"
         });
 
         const response = await fetch(
@@ -48,7 +35,7 @@ export default function Page() {
         }
         const data = await response.json();
         setMachines(data);
-        setTotalItems(data.totalCount || 0);
+
         setLoading(false);
       } catch (err) {
         setError("An error occurred while fetching data");
@@ -57,18 +44,9 @@ export default function Page() {
     };
 
     fetchMachines();
-  }, [currentPage, itemsPerPage]);
+  }, []);
 
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-  };
-
-  const handleItemsPerPageChange = (value: string) => {
-    setItemsPerPage(Number(value));
-    setCurrentPage(1);
-  };
 
   if (loading) {
     return (
@@ -88,44 +66,7 @@ export default function Page() {
 
   return (
     <div className="mx-auto p-4">
-      <div className="m-4 flex flex-col sm:flex-row items-center justify-between text-black gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Items per page:</span>
-          <Select
-            value={itemsPerPage.toString()}
-            onValueChange={handleItemsPerPageChange}
-          >
-            <SelectTrigger className="w-[70px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="5">5</SelectItem>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="20">20</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            size="icon"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <span className="text-sm text-gray-600">
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            size="icon"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      
       {machines.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-6">
           {machines.map((machine) => (
