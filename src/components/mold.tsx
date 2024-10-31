@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mold } from "@/types";
 import Link from "next/link";
 import {
@@ -8,50 +8,35 @@ import {
   Line,
   LineChart,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 import { useMemo } from "react";
-import {
-  Label,
-  PolarGrid,
-  PolarRadiusAxis,
-  RadialBar,
-  RadialBarChart,
-} from "recharts";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { Button } from "./ui/button";
+import { Circle } from "lucide-react";
 
 interface MoldComponentProps {
   mold: Mold;
 }
 
+const getHealthColor = (active: boolean, type: string) => {
+  switch (type) {
+    case "bg":
+      return active ? "bg-green-500" : "bg-red-500";
+    case "border":
+      return active ? "border-green-500" : "border-red-500";
+    case "text":
+      return active ? "text-green-500" : "text-red-500";
+    default:
+      return "";
+  }
+};
+
 export function MoldComponent({ mold }: MoldComponentProps) {
-  const calculateHealth = () => {
-    const random = Math.floor(Math.random() * 100);
-    return random > 50;
-  };
+  const health = mold.health === 1;
 
-  const health = calculateHealth();
-
-  const getHealthColor = (active: boolean, type: string) => {
-    switch (type) {
-      case "bg":
-        return active ? "bg-green-500" : "bg-red-500";
-      case "border":
-        return active ? "border-green-500" : "border-red-500";
-      case "text":
-        return active ? "text-green-500" : "text-red-500";
-      default:
-        return "";
-    }
-  };
-
-  const circleConfig = {
-    visitors: {
-      label: "Visitors",
-      color: "hsl(var(--chart-1))",
-    },
-  } satisfies ChartConfig;
+  
 
   // Generate some random data for the charts
   const chartData = useMemo(() => {
@@ -66,9 +51,7 @@ export function MoldComponent({ mold }: MoldComponentProps) {
     return data;
   }, []);
 
-  const totalVisitors = chartData.reduce((sum, item) => sum + item.visitors, 0);
 
-  const circleData = [{ visitors: totalVisitors }];
 
   return (
     <div className="bg-white rounded-lg overflow-hidden relative">
@@ -80,50 +63,26 @@ export function MoldComponent({ mold }: MoldComponentProps) {
           className={`border-2 ${getHealthColor(
             health,
             "border"
-          )} bg-opacity-20 relative z-10`}
+          )} bg-opacity-20 relative z-10 overflow-hidden`}
         >
-          <CardHeader>
+          <div className="absolute top-0 -right-0 p-2">
+            <CircleComponent health={health} />
+          </div>
+
+          <CardHeader className="bg-gradient-to-r from-white/80 from-25% via-transparent to-transparent">
             <div className="flex flex-wrap justify-between items-center">
-              <div className="flex flex-col">
+              <div className="flex flex-row items-center gap-2">
                 <CardTitle className="text-xl font-bold text-gray-800">
                   {mold.name || "N/A"}
                 </CardTitle>
               </div>
-
-              <ChartContainer config={circleConfig} className="w-24 h-24">
-                <RadialBarChart
-                  data={circleData}
-                  startAngle={0}
-                  endAngle={health ? 360 : 0}
-                  innerRadius={40}
-                  outerRadius={50}
-                >
-                  <PolarGrid gridType="circle" radialLines={false} />
-                  <PolarRadiusAxis tick={false} axisLine={false} />
-                  <RadialBar
-                    dataKey="visitors"
-                    cornerRadius={10}
-                    fill="var(--color-visitors)"
-                    background
-                  />
-                  <text
-                    x="50%"
-                    y="50%"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="fill-foreground text-lg font-bold"
-                  >
-                    Active
-                  </text>
-                </RadialBarChart>
-              </ChartContainer>
             </div>
           </CardHeader>
         </Card>
       </Link>
 
       {/* Background Chart */}
-      <div className="absolute top-0 left-0 w-full h-full transform scale-105">
+      <div className="absolute bottom-0 left-0 w-full h-full transform scale-105">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
             {/* <CartesianGrid strokeDasharray="3 3" /> */}
@@ -140,9 +99,42 @@ export function MoldComponent({ mold }: MoldComponentProps) {
               activeDot={{ r: 8 }}
               name="Duration"
             />
+            <Tooltip />
           </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
   );
 }
+
+
+// Circle component, health as prop
+function CircleComponent(
+    { health }: { health: boolean }
+    ) {
+    return (
+      <div>
+        {health ? (
+          <div className="relative h-4 w-4">
+            <div
+              className={`w-4 h-4 rounded-full absolute ${getHealthColor(
+                health,
+                "bg"
+              )}`}
+            />
+
+            <div
+              className={`w-4 h-4 rounded-full absolute animate-ping ${getHealthColor(
+                health,
+                "bg"
+              )}`}
+            />
+          </div>
+        ) : (
+          <div
+            className={`w-4 h-4 rounded-full ${getHealthColor(health, "bg")}`}
+          />
+        )}
+      </div>
+    );
+    }
