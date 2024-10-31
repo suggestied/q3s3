@@ -127,7 +127,7 @@ export function MoldComponent({ mold }: MoldComponentProps) {
               activeDot={{ r: 8 }}
               name="Duration"
             />
-            <CartesianGrid strokeDasharray="3 3" />
+            {/* <CartesianGrid strokeDasharray="3 3" /> */}
             <Tooltip />
           </LineChart>
         </ResponsiveContainer>
