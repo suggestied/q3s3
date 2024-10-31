@@ -5,6 +5,13 @@ export interface Machine {
   name: string;
 }
 
+// Mold
+export interface Mold {
+  id: number;
+  name: string;
+  health: number;
+}
+
 export interface Tellerstand {
   id: number;
   waarde: number;

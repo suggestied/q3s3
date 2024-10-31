@@ -68,7 +68,7 @@ export default function Page() {
     <div className="mx-auto p-4">
       
       {machines.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-6">
           {machines.map((machine) => (
             <MachineComponent key={machine.id} machine={machine} />
           ))}
