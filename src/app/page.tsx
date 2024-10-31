@@ -51,6 +51,13 @@ const moldRed = {
   name: "Test Mold",
   id: 1,
   health: 0,
+  machine: {
+    id: 0,
+    name: "Default Machine",
+    status: "inactive",
+  },
+  shots24h: 0,
+  avgShotDuration24h: 0,
 };
 
   if (loading) {
