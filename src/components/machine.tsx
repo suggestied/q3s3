@@ -75,14 +75,6 @@ export function MachineComponent({ machine, withMold }: MachineComponentProps) {
                     <li>
                       <span className="font-bold">Mold:</span> {withMold.name}
                     </li>
-                    <li>
-                      <span className="font-bold">Shots 24h:</span>{" "}
-                      {withMold.shots24h}
-                    </li>
-                    <li>
-                      <span className="font-bold">Avg Shot Duration 24h:</span>{" "}
-                      {withMold.avgShotDuration24h}
-                    </li>
                   </>
                 )}
               </ul>
