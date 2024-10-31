@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mold } from "@/types";
 import Link from "next/link";
 import {
-  CartesianGrid,
   Line,
   LineChart,
   ResponsiveContainer,
