@@ -1,9 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Machine } from "@/types";
-import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
+import { Button } from "./ui/button";
 
 
 interface MachineComponentProps {
@@ -13,37 +13,32 @@ interface MachineComponentProps {
 export function MachineComponent({ machine }: MachineComponentProps) {
 
   const calculateHealth = () => {
-    const health = Math.floor(Math.random() * 100);
-    return health;
+    // return bool or true
+    const random = Math.floor(Math.random() * 100);
+    return random > 50 ? true : false;
   };
 
   const health = calculateHealth();
 
-  const getHealthColor = (health: number, type: string) => {
+  const getHealthColor = (active: boolean, type: string) => {
     // return the class based of the type
     // bg, border, text
     switch (type) {
       case "bg":
-        if (health > 90) {
+        if (active) {
           return "bg-green-500";
-        } else if (health > 70) {
-          return "bg-yellow-500";
         } else {
           return "bg-red-500";
         }
       case "border":
-        if (health > 90) {
+        if (active) {
           return "border-green-500";
-        } else if (health > 70) {
-          return "border-yellow-500";
         } else {
           return "border-red-500";
         }
       case "text":
-        if (health > 90) {
+        if (active) {
           return "text-green-500";
-        } else if (health > 70) {
-          return "text-yellow-500";
         } else {
           return "text-red-500";
         }
@@ -56,34 +51,34 @@ export function MachineComponent({ machine }: MachineComponentProps) {
       <Link href={`/machines/${machine.id}/boards`}>
         <Card
           className={`
-    border-2 ${getHealthColor(health, "border")} ${getHealthColor(
-            health,
-            "bg"
-          )} bg-opacity-20
+    border-2 ${getHealthColor(health, "border")} border-2 bg-opacity-20
     `}
         >
-          <CardHeader className="pb-2">
-            <div className="flex justify-between items-center">
-              <CardTitle className="text-xl font-bold text-gray-800">
-                {machine.name || "N/A"}
-              </CardTitle>
+          <CardHeader>
+            <div className="flex flex-wrap justify-between items-center">
+              <div className="flex flex-col">
+                <CardTitle className="text-xl font-bold text-gray-800">
+                  {machine.name || "N/A"}
+                </CardTitle>
+                <div className="text-sm text-gray-500">
+                 N/A
+                  </div>
+              </div>
+
+              <Button
+                className={
+                  "text-sm font-semibold " + getHealthColor(health, "bg")
+                }
+                onClick={() => {
+                  console.log("clicked");
+                }}
+              >
+
+                {health ? "Active" : "Inactive"}
+                
+              </Button>
             </div>
           </CardHeader>
-          <CardContent>
-            <Progress value={health} />
-
-            <div className="flex justify-between items-center mt-2">
-              <div className="text-sm text-gray-600">Health</div>
-              <div
-                className={`text-sm font-bold ${getHealthColor(
-                  health,
-                  "text"
-                )}`}
-              >
-                {health}%
-              </div>
-            </div>
-          </CardContent>
         </Card>
       </Link>
     </div>
