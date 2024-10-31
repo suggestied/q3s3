@@ -13,8 +13,7 @@ import {
   YAxis,
 } from "recharts";
 import { useMemo } from "react";
-import { Button } from "./ui/button";
-import { Check, Circle, Clock, X } from "lucide-react";
+import { Check, Clock, X } from "lucide-react";
 
 interface MoldComponentProps {
   mold: Mold;

@@ -1,5 +1,4 @@
 import { MoldComponent } from "@/components/mold";
-import { machine } from "os";
 
 export default function Page() {
   // random mold function

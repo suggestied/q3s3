@@ -4,13 +4,6 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Machine, Mold } from "@/types";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { MoldComponent } from "./mold";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 
 interface MachineComponentProps {
