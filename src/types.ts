@@ -12,6 +12,8 @@ export interface Mold {
   health: number;
   machine: Machine;
 
+  isOffline: boolean;
+
   shots24h: number;
   avgShotDuration24h: number;
 }

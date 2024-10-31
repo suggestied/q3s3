@@ -13,6 +13,7 @@ export default function Page() {
       id: Math.floor(Math.random() * 100),
       health: Math.floor(Math.random() * 100) > 50 ? 1 : 0,
       shots24h: Math.floor(Math.random() * 100),
+      isOffline: Math.floor(Math.random() * 100) > 30,
       avgShotDuration24h: Math.floor(Math.random() * 100),
       machine: {
         id: Math.floor(Math.random() * 100),
@@ -21,19 +22,27 @@ export default function Page() {
     };
   }
 
+  // generate a array with molds
+  const molds = Array.from({ length: 10 }, () => randomMold());
+
+  // sort by isOffline, and then by health
+  molds.sort((a, b) => {
+    if (a.isOffline && !b.isOffline) {
+      return 1;
+    }
+    if (!a.isOffline && b.isOffline) {
+      return -1;
+    }
+    return a.health - b.health;
+  }
+  );
+
   return (
     <div className="container mx-auto">
       <div className="grid grid-cols-4 gap-4">
-        <MoldComponent mold={randomMold()} />
-        <MoldComponent mold={randomMold()} />
-        <MoldComponent mold={randomMold()} />
-        <MoldComponent mold={randomMold()} />
-        <MoldComponent mold={randomMold()} />
-
-        <MoldComponent mold={randomMold()} />
-        <MoldComponent mold={randomMold()} />
-        <MoldComponent mold={randomMold()} />
-        <MoldComponent mold={randomMold()} />
+        {molds.map((mold) => (
+          <MoldComponent key={mold.id} mold={mold} />
+        ))}
       </div>
     </div>
   );

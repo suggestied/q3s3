@@ -51,6 +51,7 @@ const moldRed = {
   name: "Test Mold",
   id: 1,
   health: 0,
+  isOffline: false,
   machine: {
     id: 0,
     name: "Default Machine",

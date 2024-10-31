@@ -75,8 +75,6 @@ export function TopBarComponent() {
 
         </div>
       </div>
-      {/* Orange background extension with gradient */}
-      <div className="absolute top-16 left-0 w-full h-96 bg-gradient-to-b from-orange-500 to-orange-300 -z-10"></div>
     </div>
   );
 }
