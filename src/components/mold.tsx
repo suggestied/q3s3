@@ -79,6 +79,7 @@ export function MoldComponent({ mold }: MoldComponentProps) {
                 >
                   {mold.name || "N/A"}
                 </CardTitle>
+                <span className="text-sm text-gray-500">Machine 1</span>
 
                 <span className="text-sm text-gray-500 flex text-center items-center gap-1">
                   <Clock className="w-6 h-6" />
@@ -89,14 +90,20 @@ export function MoldComponent({ mold }: MoldComponentProps) {
           </CardHeader>
           <CardContent className="bg-gradient-to-t from-white/80 from-25% via-transparent to-transparent">
             {/* Shots, avg duration */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-start">
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500">Shots</span>
-                <span className="text-lg font-bold text-gray-800">10</span>
+                <span className="text-lg font-bold text-gray-800">
+                    {
+                        mold.shots24h
+                    }
+                </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500">Avg. Duration</span>
-                <span className="text-lg font-bold text-gray-800">10s</span>
+                <span className="text-lg font-bold text-gray-800">
+                    {mold.avgShotDuration24h}
+                </span>
               </div>
             </div>
           </CardContent>

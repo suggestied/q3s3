@@ -5,6 +5,12 @@ import { Machine, Mold } from "@/types";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { MoldComponent } from "./mold";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 
 interface MachineComponentProps {
@@ -84,12 +90,6 @@ export function MachineComponent({ machine, withMold }: MachineComponentProps) {
             </Button>
           </div>
         </CardHeader>
-        {withMold && (
-          <div className="p-4">
-            <h1 className="text-lg font-semibold">Mold</h1>
-            <MoldComponent mold={withMold} />
-          </div>
-        )}
       </Card>
     </Link>
   );

@@ -10,6 +10,10 @@ export interface Mold {
   id: number;
   name: string;
   health: number;
+  machine: Machine;
+
+  shots24h: number;
+  avgShotDuration24h: number;
 }
 
 export interface Tellerstand {
