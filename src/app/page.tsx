@@ -47,6 +47,11 @@ export default function Page() {
   }, []);
 
 
+const moldRed = {
+  name: "Test Mold",
+  id: 1,
+  health: 0,
+};
 
   if (loading) {
     return (
@@ -70,7 +75,9 @@ export default function Page() {
       {machines.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-6">
           {machines.map((machine) => (
-            <MachineComponent key={machine.id} machine={machine} />
+            <MachineComponent key={machine.id} machine={machine}
+            withMold={moldRed}
+            />
           ))}
         </div>
       ) : (

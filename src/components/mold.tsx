@@ -14,7 +14,7 @@ import {
 } from "recharts";
 import { useMemo } from "react";
 import { Button } from "./ui/button";
-import { Circle } from "lucide-react";
+import { Check, Circle, Clock, X } from "lucide-react";
 
 interface MoldComponentProps {
   mold: Mold;
@@ -69,20 +69,42 @@ export function MoldComponent({ mold }: MoldComponentProps) {
             <CircleComponent health={health} />
           </div>
 
-          <CardHeader className="bg-gradient-to-r from-white/80 from-25% via-transparent to-transparent">
-            <div className="flex flex-wrap justify-between items-center">
-              <div className="flex flex-row items-center gap-2">
-                <CardTitle className="text-xl font-bold text-gray-800">
+          <CardHeader className="bg-gradient-to-b from-white/80 from-25% via-transparent to-transparent">
+            <div className="flex flex-wrap justify-between items-center ">
+              <div className="flex flex-col items-start">
+                <CardTitle
+                  className={
+                    "text-2xl font-bold " + getHealthColor(health, "text")
+                  }
+                >
                   {mold.name || "N/A"}
                 </CardTitle>
+
+                <span className="text-sm text-gray-500 flex text-center items-center gap-1">
+                  <Clock className="w-6 h-6" />
+                  24h
+                </span>
               </div>
             </div>
           </CardHeader>
+          <CardContent className="bg-gradient-to-t from-white/80 from-25% via-transparent to-transparent">
+            {/* Shots, avg duration */}
+            <div className="flex justify-between items-center">
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-500">Shots</span>
+                <span className="text-lg font-bold text-gray-800">10</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-500">Avg. Duration</span>
+                <span className="text-lg font-bold text-gray-800">10s</span>
+              </div>
+            </div>
+          </CardContent>
         </Card>
       </Link>
 
       {/* Background Chart */}
-      <div className="absolute bottom-0 left-0 w-full h-full transform scale-105">
+      <div className="absolute bottom-0 left-0 w-full h-3/6 transform scale-105">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
             {/* <CartesianGrid strokeDasharray="3 3" /> */}
@@ -129,11 +151,17 @@ function CircleComponent(
                 "bg"
               )}`}
             />
+
+            <Check className="w-4 h-4 absolute text-white" />
           </div>
         ) : (
-          <div
-            className={`w-4 h-4 rounded-full ${getHealthColor(health, "bg")}`}
-          />
+          <div className="relative h-4 w-4">
+            <div
+              className={`w-4 h-4 absolute rounded-full ${getHealthColor(health, "bg")}`}
+            />
+
+            <X className="w-4 h-4 absolute text-white" />
+          </div>
         )}
       </div>
     );

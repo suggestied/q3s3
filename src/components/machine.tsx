@@ -1,16 +1,18 @@
 "use client";
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Machine } from "@/types";
+import { Machine, Mold } from "@/types";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { MoldComponent } from "./mold";
 
 
 interface MachineComponentProps {
   machine: Machine;
+  withMold?: Mold;
 }
 
-export function MachineComponent({ machine }: MachineComponentProps) {
+export function MachineComponent({ machine, withMold }: MachineComponentProps) {
   const calculateHealth = () => {
     // return bool or true
     const random = Math.floor(Math.random() * 100);
@@ -67,7 +69,7 @@ export function MachineComponent({ machine }: MachineComponentProps) {
                 <li>
                   <span className="font-bold">Port:</span> 32
                 </li>
-                </ul>
+              </ul>
             </div>
 
             <Button
@@ -82,6 +84,12 @@ export function MachineComponent({ machine }: MachineComponentProps) {
             </Button>
           </div>
         </CardHeader>
+        {withMold && (
+          <div className="p-4">
+            <h1 className="text-lg font-semibold">Mold</h1>
+            <MoldComponent mold={withMold} />
+          </div>
+        )}
       </Card>
     </Link>
   );
