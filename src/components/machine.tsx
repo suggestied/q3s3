@@ -63,7 +63,7 @@ export function MachineComponent({ machine, withMold }: MachineComponentProps) {
     `}
       >
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-wrap justify-between items-center">
             <div className="flex flex-col mr-4">
               <CardTitle className="text-xl font-bold text-gray-800">
                 {machine.name || "N/A"}
