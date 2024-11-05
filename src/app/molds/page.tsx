@@ -23,7 +23,7 @@ export default function Page() {
   }
 
   // generate a array with molds
-  const molds = Array.from({ length: 10 }, () => randomMold());
+  const molds = Array.from({ length: 20 }, () => randomMold());
 
   // sort by isOffline, and then by health
   molds.sort((a, b) => {
@@ -38,8 +38,9 @@ export default function Page() {
   );
 
   return (
-    <div className="container mx-auto">
-      <div className="grid grid-cols-4 gap-4">
+    <div className="container mx-auto px-4">
+      <h1 className="text-2xl font-bold text-gray-800 mb-4">Molds</h1>
+      <div className="w-fit flex flex-wrap gap-8">
         {molds.map((mold) => (
           <MoldComponent key={mold.id} mold={mold} />
         ))}

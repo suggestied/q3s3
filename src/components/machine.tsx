@@ -36,63 +36,18 @@ export function MachineComponent({ machine, withMold }: MachineComponentProps) {
         } else {
           return "border-red-500";
         }
-      case "text":
+      case "status":
         if (active) {
-          return "text-green-500";
+          return "text-green-300";
         } else {
-          return "text-red-500";
+          return "text-red-300";
         }
     }
   };
 
   return (
-    <Link href={`/machines/${machine.id}/boards`} className="w-full h-full">
-      <Card
-        className={`
-    border-2 ${getHealthColor(
-      health,
-      "border"
-    )} border-opacity-40 border-2 bg-opacity-100 shadow h-full
-    `}
-      >
-        <CardHeader>
-          <div className="flex flex-wrap justify-between items-center">
-            <div className="flex flex-col mr-4">
-              <CardTitle className="text-xl font-bold text-gray-800">
-                {machine.name || "N/A"}
-              </CardTitle>
-              <ul className="text-sm text-gray-500">
-                <li>
-                  <span className="font-bold">Board:</span> 10
-                </li>
-                <li>
-                  <span className="font-bold">Port:</span> 32
-                </li>
+    <div className="">
 
-                {/* with mold */}
-                {withMold && (
-                  <>
-                    <li>
-                      <span className="font-bold">Mold:</span> {withMold.name}
-                    </li>
-                  </>
-                )}
-              </ul>
-            </div>
-
-            <Button
-              className={
-                "text-sm font-semibold " + getHealthColor(health, "bg")
-              }
-              onClick={() => {
-                console.log("clicked");
-              }}
-            >
-              {health ? "Active" : "Inactive"}
-            </Button>
-          </div>
-        </CardHeader>
-      </Card>
-    </Link>
+    </div>
   );
 }

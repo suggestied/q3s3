@@ -9,7 +9,8 @@ export function TopBarComponent() {
   const [isOpen, setIsOpen] = useState(false);
 
   const pages = [
-    { url: "/", name: "Dashboard" },
+    { url: "/", name: "Machines" },
+    { url: "/molds", name: "Molds" }
   ];
 
   return (
