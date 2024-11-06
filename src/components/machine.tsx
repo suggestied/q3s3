@@ -1,10 +1,7 @@
 "use client";
 
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Machine, Mold } from "@/types";
-import Link from "next/link";
-import { Button } from "./ui/button";
-import { Circle, CircleCheck, Clock, Plug, Unplug } from "lucide-react";
+import {CircleCheck, Clock, Unplug } from "lucide-react";
 
 
 interface MachineComponentProps {
@@ -13,13 +10,6 @@ interface MachineComponentProps {
 }
 
 export function MachineComponent({ machine, withMold }: MachineComponentProps) {
-  const calculateHealth = () => {
-    // return bool or true
-    const random = Math.floor(Math.random() * 100);
-    return random > 50 ? true : false;
-  };
-
-  const health = calculateHealth();
 
   const getHealthColor = (active: boolean, type: string) => {
     // return the class based of the type

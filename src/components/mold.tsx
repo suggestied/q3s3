@@ -46,16 +46,26 @@ export function MoldComponent({ mold }: MoldComponentProps) {
   }
 
   return (
-      <div className={`w-56 h-min shadow-sm rounded-lg overflow-hidden p-5 flex flex-col justify-between text-white ${getHealthColor(mold.health)}`}>
-        <div className="flex flex-col">
+      <div
+          className={`w-56 h-50 shadow-sm rounded-lg overflow-hidden p-5 flex flex-col justify-between text-white ${getHealthColor(mold.health)}`}>
+          <div className="flex flex-col">
+              <div className="flex justify-between items-center">
+                  <span className="text-xl font-bold">{mold.name} - {mold.description}</span>
+              </div>
+          </div>
           <div className="flex justify-between items-center">
-              <div className="flex flex-col">
-                  <span className="text-3xl font-bold">{mold.name}</span>
-                  <span className="text-xs font-medium opacity-60">{mold.machine.name}</span>
+              <div className="flex flex-col gap-1">
+                  <div className="flex flex-col">
+                      <span className="text-xs font-medium opacity-60">Shots</span>
+                      <span className="text-md font-bold leading-none">{mold.shots24h || 0}</span>
+                  </div>
+                  <div className="flex flex-col">
+                      <span className="text-xs font-medium opacity-60">Avg</span>
+                      <span className="text-md font-bold leading-none">{mold.avgShotDuration24h || 0}s</span>
+                  </div>
               </div>
               <CircleProgressComponent percentage={mold.health === 0 ? 29 : 92}/>
           </div>
-        </div>
       </div>
   );
 }

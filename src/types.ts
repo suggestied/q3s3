@@ -9,6 +9,7 @@ export interface Machine {
 export interface Mold {
   id: number;
   name: string;
+  description: string;
   health: number;
   machine: Machine;
 

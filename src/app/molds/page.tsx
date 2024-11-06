@@ -30,7 +30,7 @@ export default function Page() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("http://localhost:5174/mold/list?skip=0&limit=30");
+        const response = await fetch("https://localhost:44371/mold/list?skip=0&limit=30");
         const data = await response.json();
 
         // Verwerk de ontvangen data
@@ -58,7 +58,7 @@ export default function Page() {
   return (
       <div className="container mx-auto px-4">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">Molds</h1>
-        <div className="w-fit flex flex-wrap gap-8">
+        <div className="w-fit flex flex-wrap gap-8 mb-20">
           {isLoading ? (
               // Toon skeletons zolang data wordt geladen
               Array.from({ length: 10 }).map((_, index) => (
