@@ -1,50 +1,76 @@
+"use client"
+import { useEffect, useState } from "react";
 import { MoldComponent } from "@/components/mold";
+import { Skeleton } from "@/components/ui/skeleton"; // Zorg ervoor dat dit component bestaat in ShadCN
+
+// Definieer een type voor de machine
+type Machine = {
+  id: number;
+  name: string;
+};
+
+// Definieer een type voor de mold-objecten
+type Mold = {
+  id: number;
+  name: string;
+  description: string;
+  health: number;
+  shots24h: number;
+  isOffline: boolean;
+  avgShotDuration24h: number;
+  machine: Machine;
+};
 
 export default function Page() {
-  // random mold function
-  // generate 
-  // create function
+  const [molds, setMolds] = useState<Mold[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const randomMold = () => {
-    // name is 5 random numbers
-    const name = Math.floor(Math.random() * 100000).toString();
-    return {
-      name: name,
-      id: Math.floor(Math.random() * 100),
-      health: Math.floor(Math.random() * 100) > 50 ? 1 : 0,
-      shots24h: Math.floor(Math.random() * 100),
-      isOffline: Math.floor(Math.random() * 100) > 30,
-      avgShotDuration24h: Math.floor(Math.random() * 100),
-      machine: {
-        id: Math.floor(Math.random() * 100),
-        name: `Machine ${Math.floor(Math.random() * 100)}`,
-      },
+  // Functie om data op te halen van de API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("http://localhost:5174/mold/list?skip=0&limit=30");
+        const data = await response.json();
+
+        // Verwerk de ontvangen data
+        const updatedMolds: Mold[] = data.map((mold: { id: number; naam: string; omschrijving: string; current_machine_id: number; current_machine_name: string; }) => ({          id: mold.id,
+          name: mold.naam,
+          description: mold.omschrijving,
+          health: Math.floor(Math.random() * 101),
+          machine: {
+            id: mold.current_machine_id,
+            name: mold.current_machine_name,
+          },
+        }));
+
+        setMolds(updatedMolds);
+      } catch (error) {
+        console.error("Fout bij het ophalen van molds:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-  }
 
-  // generate a array with molds
-  const molds = Array.from({ length: 20 }, () => randomMold());
-
-  // sort by isOffline, and then by health
-  molds.sort((a, b) => {
-    if (a.isOffline && !b.isOffline) {
-      return 1;
-    }
-    if (!a.isOffline && b.isOffline) {
-      return -1;
-    }
-    return a.health - b.health;
-  }
-  );
+    fetchData();
+  }, []);
 
   return (
-    <div className="container mx-auto px-4">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Molds</h1>
-      <div className="w-fit flex flex-wrap gap-8">
-        {molds.map((mold) => (
-          <MoldComponent key={mold.id} mold={mold} />
-        ))}
+      <div className="container mx-auto px-4">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">Molds</h1>
+        <div className="w-fit flex flex-wrap gap-8">
+          {isLoading ? (
+              // Toon skeletons zolang data wordt geladen
+              Array.from({ length: 10 }).map((_, index) => (
+                  <Skeleton key={index} className="h-20 w-40 rounded-md" />
+              ))
+          ) : (
+              // Toon de werkelijke MoldComponent zodra de data is geladen
+              molds.map((mold) => (
+                  <MoldComponent key={mold.id} mold={mold} />
+              ))
+          )}
+        </div>
       </div>
-    </div>
   );
 }

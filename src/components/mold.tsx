@@ -1,113 +1,61 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import { Mold } from "@/types";
-import Link from "next/link";
-import {
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { useMemo } from "react";
-import { CircleCheck, CircleX } from "lucide-react";
-import { Skeleton } from "./ui/skeleton";
 import { CircleProgressComponent } from "./circle-progress";
+import { Skeleton } from "./ui/skeleton"; // Assuming you have a skeleton component
 
 interface MoldComponentProps {
   mold: Mold;
 }
 
-const getHealthColor = (health: number, type: string) => {
-
-  const needsRepair = health === 0;
-
-  switch (type) {
-    case "bg":
-      return needsRepair ? "bg-red-600" : "bg-[#19bb00]";
-    default:
-      return "";
-  }
-
+const getHealthColor = (health: number) => {
+  if (health <= 70) return "bg-red-600";
+  if (health > 70) return "bg-[#19bb00]";
 };
 
 
 export function MoldComponent({ mold }: MoldComponentProps) {
-  const health = mold.health === 1;
+  const [loading, setLoading] = useState(true);
 
-  // Generate some random data for the charts
-  const chartData = useMemo(() => {
-    const data = [];
-    for (let i = 0; i < 30; i++) {
-      data.push({
-        date: `2021-08-${i + 1}`,
-        duration: Math.floor(Math.random() * 100),
-        visitors: Math.floor(Math.random() * 1000),
-      });
-    }
-    return data;
+  useEffect(() => {
+    // Simulate loading delay for skeleton to be shown
+    const timer = setTimeout(() => setLoading(false), 1000); // Adjust delay as needed
+    return () => clearTimeout(timer);
   }, []);
 
+  if (loading) {
+    // Skeleton layout while loading
+    return (
+        <div className="w-56 h-44 shadow-sm rounded-lg overflow-hidden p-5 flex flex-col justify-between text-white bg-gray-300">
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-8 w-2/3 bg-gray-500 rounded" /> {/* Name placeholder */}
+            <Skeleton className="h-4 w-1/2 bg-gray-500 rounded" /> {/* Machine name placeholder */}
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-1/4 bg-gray-500 rounded" /> {/* Shots label placeholder */}
+              <Skeleton className="h-5 w-1/2 bg-gray-500 rounded" /> {/* Shots value placeholder */}
+              <Skeleton className="h-4 w-1/4 bg-gray-500 rounded" /> {/* Avg label placeholder */}
+              <Skeleton className="h-5 w-1/2 bg-gray-500 rounded" /> {/* Avg value placeholder */}
+            </div>
+            <Skeleton className="h-10 w-10 rounded-full bg-gray-500" /> {/* Circle progress placeholder */}
+          </div>
+        </div>
+    );
+  }
+
   return (
-    <div className={`w-56 h-44 shadow-sm rounded-lg overflow-hidden p-5 flex flex-col justify-between text-white ${getHealthColor(mold.health, 'bg')}`}>
-
-      <div className="flex flex-col">
-
-        <div className="flex justify-between items-center">
-
-          <span className="text-3xl font-bold">
-            {mold.name}
-          </span>
-
-          { mold.health === 0 ?
-            <CircleX size={28} /> :
-            <CircleCheck size={28} />
-          }
-
-        </div>
-
-        <span className="text-xs font-medium opacity-60">
-          {mold.machine.name}
-        </span>
-
-      </div>
-
-      <div className="flex justify-between items-center">
-
-        <div className="flex flex-col gap-1">
-
-          <div className="flex flex-col">
-
-            <span className="text-xs font-medium opacity-60">
-              Shots
-            </span>
-
-            <span className="text-md font-bold leading-none">
-              {mold.shots24h}
-            </span>
-
+      <div className={`w-56 h-min shadow-sm rounded-lg overflow-hidden p-5 flex flex-col justify-between text-white ${getHealthColor(mold.health)}`}>
+        <div className="flex flex-col">
+          <div className="flex justify-between items-center">
+              <div className="flex flex-col">
+                  <span className="text-3xl font-bold">{mold.name}</span>
+                  <span className="text-xs font-medium opacity-60">{mold.machine.name}</span>
+              </div>
+              <CircleProgressComponent percentage={mold.health === 0 ? 29 : 92}/>
           </div>
-
-          <div className="flex flex-col">
-
-            <span className="text-xs font-medium opacity-60">
-              Avg
-            </span>
-
-            <span className="text-md font-bold leading-none">
-              {mold.avgShotDuration24h}s
-            </span>
-
-          </div>
-
         </div>
-
-        <CircleProgressComponent percentage={mold.health === 0 ? 29 : 92} />
-
       </div>
-      
-    </div>
   );
 }
