@@ -47,26 +47,30 @@ export function MoldComponent({ mold }: MoldComponentProps) {
 
   return (
       <div
-          className={`w-56 h-50 shadow-sm rounded-lg overflow-hidden p-5 flex flex-col justify-between text-white ${getHealthColor(mold.health)}`}
-          style={{height: '180px'}}>
-          <div className="flex flex-col">
-              <div className="flex justify-between items-center">
-                  <span className="font-bold">{mold.name} - {mold.description}</span>
-              </div>
+          className={`w-56 shadow-sm rounded-lg overflow-hidden p-4 flex flex-col justify-between text-white ${getHealthColor(mold.health)}`}
+          style={{height: '180px'}}
+      >
+          <div className="flex flex-col mb-2">
+              <span className="text-lg font-bold">{mold.name} - </span>
+              <span
+                  className="text-lg font-bold overflow-hidden whitespace-nowrap text-ellipsis"
+                  style={{maxWidth: '220px'}} // Adjust width as needed
+              >
+            {mold.description}
+        </span>
           </div>
-          <div className="flex justify-between items-center">
-              <div className="flex flex-col gap-1">
-                  <div className="flex flex-col">
-                      <span className="text-xs font-medium opacity-60">Shots</span>
-                      <span className="text-md font-bold leading-none">{mold.shots24h || 0}</span>
-                  </div>
-                  <div className="flex flex-col">
-                      <span className="text-xs font-medium opacity-60">Avg</span>
-                      <span className="text-md font-bold leading-none">{mold.avgShotDuration24h || 0}s</span>
-                  </div>
-              </div>
+          <div className="flex items-center justify-between mt-3">
+        <span
+            className={`text-sm font-bold px-2 py-1 rounded ${
+                mold.health <= 70 ? 'bg-red-500 bg-opacity-80 border border-red-700' : 'bg-green-400 bg-opacity-80 border border-green-500'
+            }`}
+        >
+            {mold.health <= 70 ? 'Maintenance Required' : 'No Maintenance Needed'}
+        </span>
               <CircleProgressComponent percentage={mold.health}/>
           </div>
       </div>
+
+
   );
 }
