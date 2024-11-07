@@ -1,7 +1,8 @@
 "use client";
 
 import { Machine, Mold } from "@/types";
-import {CircleCheck, Clock, Unplug } from "lucide-react";
+import { CircleCheck, Clock, Unplug } from "lucide-react";
+import { Skeleton } from "./ui/skeleton";
 
 
 interface MachineComponentProps {
@@ -64,10 +65,13 @@ export function MachineComponent({ machine, withMold }: MachineComponentProps) {
 
           <div className="flex flex-col text-center">
 
-            <span className="text-md font-bold">
-              {withMold?.shots24h}
-            </span>
-
+            {typeof withMold?.avgShotDuration24h !== 'number' ?
+              <Skeleton className="w-[40px] h-[24px]" /> :
+              <span className="text-md font-bold">
+                {withMold?.shots24h}
+              </span>
+            }
+            
             <span className="text-xs">
               Shots
             </span>
@@ -76,9 +80,12 @@ export function MachineComponent({ machine, withMold }: MachineComponentProps) {
 
           <div className="flex flex-col text-center">
 
-            <span className="text-md font-bold">
-              {withMold?.avgShotDuration24h}s
-            </span>
+            {typeof withMold?.avgShotDuration24h !== 'number' ?
+              <Skeleton className="w-[40px] h-[24px]" /> :
+              <span className="text-md font-bold">
+                {withMold?.avgShotDuration24h}s
+              </span>
+            }
 
             <span className="text-xs">
               Per shot
@@ -109,7 +116,7 @@ export function MachineComponent({ machine, withMold }: MachineComponentProps) {
 
       <div className="flex w-full justify-between items-center">
 
-        
+
 
       </div>
 

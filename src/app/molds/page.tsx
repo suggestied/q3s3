@@ -30,7 +30,7 @@ export default function Page() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("https://localhost:44371/mold/list?skip=0&limit=30");
+        const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/mold/list?skip=0&limit=30");
         const data = await response.json();
 
         // Verwerk de ontvangen data
