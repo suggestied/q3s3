@@ -5,7 +5,7 @@ import {useEffect, useState} from "react";
 import {getMachineShots} from "@/lib/api";
 import {median} from "d3-array";
 import {ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent,} from "@/components/ui/chart"
-import {Area, AreaChart, XAxis, YAxis} from "recharts";
+import {Area, AreaChart, YAxis} from "recharts";
 
 interface MachineComponentProps {
     machine: Machine;
@@ -41,7 +41,8 @@ export function MachineComponent({machine, shotsFrom, shotsTo}: MachineComponent
     }, [machine.id, shotsFrom, shotsTo]);
 
     return (
-        <div className={`flex flex-col basis-52 p-6 rounded-lg bg-green-500 text-zinc-50`}>
+        <div
+            className={`flex flex-col basis-52 p-6 rounded-lg  ${shots.length == 0 ? "bg-gray-200 text-zinc-600" : "bg-green-500 text-zinc-50"}`}>
             <div className={"flex mb-3 gap-10"}>
                 <div className="">
                     <span className="font-semibold text-2xl block">{machine.name}</span>
@@ -57,8 +58,9 @@ export function MachineComponent({machine, shotsFrom, shotsTo}: MachineComponent
                     <span>avg shot</span>
                 </div>
             </div>
-            <ChartContainer className="m-auto w-full border rounded-xl p-2 h-fit border-white/30 shadow-xl"
-                            config={chartConfig}>
+            <ChartContainer
+                className={`m-auto w-full rounded-xl p-2 h-fit border-white/30 ${shots.length == 0 ? "bg-zinc-300" : 'bg-black/5'}`}
+                config={chartConfig}>
                 <AreaChart className="p-0 m-0"
                            data={shots}
                 >
@@ -70,15 +72,6 @@ export function MachineComponent({machine, shotsFrom, shotsTo}: MachineComponent
                         width={22}
                         stroke={"rgb(250,250,250)"}
                         scale="linear"
-                        domain={[Math.min(...shots.map(s => s.shot_time)) - 0.1, Math.max(...shots.map(s => s.shot_time)) + 0.1]}
-                    />
-                    <XAxis
-                        dataKey="time_stamp"
-                        tickLine={false}
-                        axisLine={false}
-                        className="text-zinc-50"
-
-                        width={200}
                         domain={[Math.min(...shots.map(s => s.shot_time)) - 0.1, Math.max(...shots.map(s => s.shot_time)) + 0.1]}
                     />
                     <ChartTooltip
