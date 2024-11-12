@@ -19,3 +19,7 @@ export async function getMachines(skip: number = 0, limit: number = 5): Promise<
 export async function getMachineShots(machineId: number, from: Date, to: Date): Promise<AxiosResponse<MachineShot[]>> {
     return await axiosInstance.get("/machine/shots", {params: {from: from, to: to, machineId: machineId}});
 }
+
+export async function getMoldHealth(moldId: number, lastMaintenance: Date): Promise<AxiosResponse<{health: number}>> {
+    return await axiosInstance.get("mold/health", {params: {moldId: moldId, lastMaintenance: lastMaintenance}})
+}

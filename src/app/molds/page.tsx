@@ -30,7 +30,7 @@ export default function Page() {
 
     useEffect(() => {
         setDisplayMolds(molds.filter(m => m.name.toLowerCase().includes(search.toLowerCase()) || m.description.toLowerCase().includes(search.toLowerCase())).sort((a, b) => a.health - b.health))
-    }, [molds, search]);
+    }, [molds, search, molds.map(m => m.health)]);
 
     useEffect(() => {
         const fetchMolds = async () => {

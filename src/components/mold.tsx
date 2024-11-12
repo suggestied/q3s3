@@ -6,13 +6,14 @@ import {Skeleton} from "./ui/skeleton";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {getMoldHistory} from "@/lib/api";
+import {getMoldHealth, getMoldHistory} from "@/lib/api";
 
 interface MoldComponentProps {
     mold: Mold;
 }
 
 const getHealthColor = (health: number) => {
+    if (health == -1) return "bg-gray-200"
     if (health <= 70) return "bg-red-600";
     if (health > 70) return "bg-[#19bb00]";
 };
@@ -20,6 +21,18 @@ const getHealthColor = (health: number) => {
 export function MoldComponent({mold}: MoldComponentProps) {
     const [showInfo, setShowInfo] = useState(false);
     const [moldHistory, setMoldHistory] = useState<MoldHistory[]>([]);
+    const [moldHealth, setMoldHealth] = useState(-1);
+
+    useEffect(() => {
+        getMoldHealth(mold.id, new Date(2020, 1, 30, 0, 0, 0, 0)).then(response => {
+            setMoldHealth(response.data.health)
+        })
+    }, []);
+
+    useEffect(() => {
+        mold.health = moldHealth
+    }, [moldHealth]);
+
     useEffect(() => {
         if (moldHistory.length == 0 && showInfo) {
             getMoldHistory(mold.id).then(r => setMoldHistory(r.data))
@@ -49,7 +62,7 @@ export function MoldComponent({mold}: MoldComponentProps) {
 
     return (
         <button
-            className={`text-left shadow-sm rounded-lg overflow-hidden p-4 gap-5 flex justify-between text-zinc-100 ${getHealthColor(mold.health)}`}
+            className={`text-left shadow-sm rounded-lg overflow-hidden p-4 gap-5 flex justify-between text-zinc-100 ${getHealthColor(moldHealth)}`}
             onClick={() => {
                 setShowInfo(!showInfo);
             }}
@@ -60,18 +73,18 @@ export function MoldComponent({mold}: MoldComponentProps) {
                         <DialogTitle>{mold.name}</DialogTitle>
                         <DialogDescription>
                             <span
-                                className="text-zinc-950">{mold.description == "" ? "ID: " + mold.id : mold.description}</span>
+                                className={moldHealth == -1 ? "text-zinc-950" : "text-zinc-50"}>{mold.description == "" ? "ID: " + mold.id : mold.description}</span>
                             <div
                                 className="flex child:flex child:flex-col child:flex-grow gap-3 child:p-2 child:text-zinc-950 child:last:text-zinc-800 mt-2">
                                 <div><b>Board</b><span>{mold.board}</span></div>
                                 <div><b>Port</b><span>{mold.port}</span></div>
                                 <div><b>Status</b><span
-                                    className={`${mold.health > 70 ? "text-green-500" : "text-red-500"}`}>
+                                    className={`${moldHealth > 70 ? "text-green-500" : "text-red-500"}`}>
                                     {mold.health > 70 ? "OK" : "Maintenance required"}
                                 </span></div>
                                 <div>
                                     <b>Health</b>
-                                    <span>{mold.health}%</span>
+                                    <span>{moldHealth}%</span>
                                 </div>
                                 <div>
                                     <b>ID</b>
@@ -120,11 +133,10 @@ export function MoldComponent({mold}: MoldComponentProps) {
         <span
             className={`text-sm font-semibold px-2 py-1 rounded border border-white/50 w-28 text-center`}
         >
-            {mold.health <= 70 ? 'Maintenance Required' : 'Status OK'}
+            {moldHealth <= 70 ? 'Maintenance Required' : 'Status OK'}
         </span>
                 <div className="!text-sm">
-                    <CircleProgressComponent percentage={mold.health}/>
-
+                    <CircleProgressComponent percentage={moldHealth}/>
                 </div>
             </div>
         </button>
