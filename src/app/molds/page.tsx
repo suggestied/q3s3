@@ -27,9 +27,11 @@ export default function Page() {
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState("");
     const [settingsOpened, setSettingsOpened] = useState(false)
+    const [healthTolerance, setHealthTolerance] = useState(0.5);
 
     useEffect(() => {
         setDisplayMolds(molds.filter(m => m.name.toLowerCase().includes(search.toLowerCase()) || m.description.toLowerCase().includes(search.toLowerCase())).sort((a, b) => a.health - b.health))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [molds, search, molds.map(m => m.health)]);
 
     useEffect(() => {
@@ -87,6 +89,11 @@ export default function Page() {
                             <span className="flex items-center justify-center"><RectangleHorizontalIcon/> </span>
                         </Toggle>
 
+                        <span>Health tolerance</span>
+                        <Input step={0.1} onChange={(e) => {
+                            setHealthTolerance(Number((e.target as HTMLInputElement).value))
+                        }} value={healthTolerance} type={"number"} />
+
 
                     </div>
                 </CardContent>
@@ -116,7 +123,7 @@ export default function Page() {
                     ))
                 ) : (
                     displayMolds.map((mold: Mold) => (
-                        <MoldComponent key={mold.id} mold={mold}/>
+                        <MoldComponent key={mold.id} tolerance={healthTolerance} mold={mold}/>
                     ))
                 )}
             </div>

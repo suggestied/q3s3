@@ -20,6 +20,6 @@ export async function getMachineShots(machineId: number, from: Date, to: Date): 
     return await axiosInstance.get("/machine/shots", {params: {from: from, to: to, machineId: machineId}});
 }
 
-export async function getMoldHealth(moldId: number, lastMaintenance: Date): Promise<AxiosResponse<{health: number}>> {
-    return await axiosInstance.get("mold/health", {params: {moldId: moldId, lastMaintenance: lastMaintenance}})
+export async function getMoldHealth(moldId: number, lastMaintenance: Date, tolerance: number): Promise<AxiosResponse<{health: number}>> {
+    return await axiosInstance.get("mold/health", {params: {moldId: moldId, lastMaintenance: lastMaintenance, tolerance: tolerance}})
 }
