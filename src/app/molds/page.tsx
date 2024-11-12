@@ -123,7 +123,9 @@ export default function Page() {
                     ))
                 ) : (
                     displayMolds.map((mold: Mold) => (
-                        <MoldComponent key={mold.id} tolerance={healthTolerance} mold={mold} setMolds={setMolds}/>
+                        <MoldComponent key={mold.id} tolerance={healthTolerance} mold={mold} updateMold={(mold: Mold) => {
+                            setMolds(molds.map(m => m.id == mold.id ? mold : m))
+                        }}/>
                     ))
                 )}
             </div>
