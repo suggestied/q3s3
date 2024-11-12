@@ -10,7 +10,8 @@ import {getMoldHealth, getMoldHistory} from "@/lib/api";
 
 interface MoldComponentProps {
     mold: Mold;
-    tolerance: number
+    setMolds: (molds: Mold[]) => void;
+    tolerance: number;
 }
 
 const getHealthColor = (health: number) => {
@@ -19,7 +20,7 @@ const getHealthColor = (health: number) => {
     if (health > 70) return "bg-[#19bb00]";
 };
 
-export function MoldComponent({mold, tolerance}: MoldComponentProps) {
+export function MoldComponent({mold, setMolds, tolerance}: MoldComponentProps) {
     const [showInfo, setShowInfo] = useState(false);
     const [moldHistory, setMoldHistory] = useState<MoldHistory[]>([]);
     const [moldHealth, setMoldHealth] = useState(-1);
@@ -31,7 +32,18 @@ export function MoldComponent({mold, tolerance}: MoldComponentProps) {
     }, [tolerance]);
 
     useEffect(() => {
-        mold.health = moldHealth
+        let temp = molds;
+
+        const thisMold = mold;
+        thisMold.health = moldHealth;
+        //remove this mold from temp
+        temp = temp.filter((m) => m.id !== mold.id);
+        setMolds([
+            ...temp,
+            thisMold
+        ]);
+
+        // mold.health = moldHealth
     }, [moldHealth]);
 
     useEffect(() => {

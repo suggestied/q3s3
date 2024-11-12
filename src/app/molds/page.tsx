@@ -20,7 +20,7 @@ import {Button} from "@/components/ui/button";
 
 
 export default function Page() {
-    const [molds, setMolds] = useState<Mold[]>([] as Mold[]);
+    const [molds, setMolds] = useState<Mold[]>([]);
     const [displayMolds, setDisplayMolds] = useState<Mold[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [bigMode, setBigMode] = useState<boolean>(false);
@@ -32,7 +32,7 @@ export default function Page() {
     useEffect(() => {
         setDisplayMolds(molds.filter(m => m.name.toLowerCase().includes(search.toLowerCase()) || m.description.toLowerCase().includes(search.toLowerCase())).sort((a, b) => a.health - b.health))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [molds, search, molds.map(m => m.health)]);
+    }, [molds, search]);
 
     useEffect(() => {
         const fetchMolds = async () => {
@@ -123,7 +123,7 @@ export default function Page() {
                     ))
                 ) : (
                     displayMolds.map((mold: Mold) => (
-                        <MoldComponent key={mold.id} tolerance={healthTolerance} mold={mold}/>
+                        <MoldComponent key={mold.id} tolerance={healthTolerance} mold={mold} setMolds={setMolds}/>
                     ))
                 )}
             </div>
