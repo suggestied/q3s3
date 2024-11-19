@@ -25,47 +25,61 @@ export function MoldComponent({mold, updateMold, tolerance}: MoldComponentProps)
     const [moldHistory, setMoldHistory] = useState<MoldHistory[]>([]);
     const [moldHealth, setMoldHealth] = useState(-1);
 
-    useEffect(() => {
-        getMoldHealth(mold.id, new Date(2020, 1, 30, 0, 0, 0, 0), tolerance).then(response => {
-            setMoldHealth(response.data.health)
-        })
-    }, [tolerance]);
+    // useEffect(() => {
+    //     getMoldHealth(mold.id, new Date(2020, 1, 30, 0, 0, 0, 0), tolerance).then(response => {
+    //         setMoldHealth(response.data.health)
+    //     })
+    // }, [tolerance]);
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        const newMold = mold;
-        newMold.health = moldHealth;
+    //     const newMold = mold;
+    //     newMold.health = moldHealth;
 
-        updateMold(newMold);
+    //     updateMold(newMold);
         
-    }, [moldHealth]);
+    // }, [moldHealth]);
+
+    // useEffect(() => {
+    //     if (moldHistory.length == 0 && showInfo) {
+    //         getMoldHistory(mold.id).then(r => setMoldHistory(r.data))
+    //     }
+    // }, [showInfo]);
 
     useEffect(() => {
-        if (moldHistory.length == 0 && showInfo) {
-            getMoldHistory(mold.id).then(r => setMoldHistory(r.data))
-        }
-    }, [showInfo]);
-    if (false) {
-        // Skeleton layout while loading
-        return (
-            <div
-                className="basis-52 flex-grow shadow-sm rounded-lg overflow-hidden p-5 flex flex-col justify-between text-white bg-gray-300">
-                <div className="flex flex-col gap-2">
-                    <Skeleton className="h-8 w-2/3 bg-gray-500 rounded"/> {/* Name placeholder */}
-                    <Skeleton className="h-4 w-1/2 bg-gray-500 rounded"/> {/* Machine name placeholder */}
-                </div>
-                <div className="flex justify-between items-center">
-                    <div className="flex flex-col gap-2">
-                        <Skeleton className="h-4 w-1/4 bg-gray-500 rounded"/> {/* Shots label placeholder */}
-                        <Skeleton className="h-5 w-1/2 bg-gray-500 rounded"/> {/* Shots value placeholder */}
-                        <Skeleton className="h-4 w-1/4 bg-gray-500 rounded"/> {/* Avg label placeholder */}
-                        <Skeleton className="h-5 w-1/2 bg-gray-500 rounded"/> {/* Avg value placeholder */}
-                    </div>
-                    <Skeleton className="h-10 w-10 rounded-full bg-gray-500"/> {/* Circle progress placeholder */}
-                </div>
-            </div>
-        );
-    }
+
+        (async () => {
+            const health = await getMoldHealth(mold.id, new Date(2020, 1, 30, 0, 0, 0, 0), tolerance);
+            setMoldHealth(health.data.health);
+
+            const newMold = mold;
+            newMold.health = health.data.health;
+
+            updateMold(newMold);
+        })();
+
+    }, [tolerance]);
+    // if (false) {
+    //     // Skeleton layout while loading
+    //     return (
+    //         <div
+    //             className="basis-52 flex-grow shadow-sm rounded-lg overflow-hidden p-5 flex flex-col justify-between text-white bg-gray-300">
+    //             <div className="flex flex-col gap-2">
+    //                 <Skeleton className="h-8 w-2/3 bg-gray-500 rounded"/> {/* Name placeholder */}
+    //                 <Skeleton className="h-4 w-1/2 bg-gray-500 rounded"/> {/* Machine name placeholder */}
+    //             </div>
+    //             <div className="flex justify-between items-center">
+    //                 <div className="flex flex-col gap-2">
+    //                     <Skeleton className="h-4 w-1/4 bg-gray-500 rounded"/> {/* Shots label placeholder */}
+    //                     <Skeleton className="h-5 w-1/2 bg-gray-500 rounded"/> {/* Shots value placeholder */}
+    //                     <Skeleton className="h-4 w-1/4 bg-gray-500 rounded"/> {/* Avg label placeholder */}
+    //                     <Skeleton className="h-5 w-1/2 bg-gray-500 rounded"/> {/* Avg value placeholder */}
+    //                 </div>
+    //                 <Skeleton className="h-10 w-10 rounded-full bg-gray-500"/> {/* Circle progress placeholder */}
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
     return (
         <button

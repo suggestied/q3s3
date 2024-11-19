@@ -37,30 +37,27 @@ export default function Page() {
     useEffect(() => {
         const fetchMolds = async () => {
             setIsLoading(true);
-            try {
-                const response = await getMolds(currentPage * 30, 30);
-                const validated = response.data.map(mold => {
-                    return {
-                        id: mold.id,
-                        name: mold.name ?? "ID: " + mold.id.toString(),
-                        description: mold.description ?? "",
-                        health: mold.health ?? -1,
-                        machine: mold.machine,
-                        board: Number(mold.board),
-                        port: Number(mold.port),
-                    } as Mold
-                })
-                setMolds(validated);
+            const response = await getMolds(currentPage * 30, 30)
+                .catch(() => ({
+                    data: []
+                }));
+                
+            setMolds(response.data.map(mold => {
+                return {
+                    id: mold.id,
+                    name: mold.name ?? "ID: " + mold.id.toString(),
+                    description: mold.description ?? "",
+                    health: mold.health ?? -1,
+                    machine: mold.machine,
+                    board: Number(mold.board),
+                    port: Number(mold.port),
+                } as Mold
+            }));
 
-            } catch (error) {
-                console.error("Failed to fetch molds.");
-                setMolds([]);
-            } finally {
-                setIsLoading(false);
-            }
+            setIsLoading(false);
         };
 
-        fetchMolds().then(); // Call the async function
+        fetchMolds();
     }, [currentPage]);
 
     return (
