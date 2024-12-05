@@ -26,17 +26,16 @@ export default function PlanningDialog({
 }: PlanningDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl">
+      <DialogContent className="min-w-[40rem] w-[90dwv] max-h-[80vh] overflow-auto">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <NewPlanningForm
             onSubmit={onSubmit}
             onCancel={onClose}
             initialValues={initialValues}
           />
-          <PlanningGroupSuggestions />
         </div>
       </DialogContent>
     </Dialog>

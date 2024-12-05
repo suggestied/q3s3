@@ -8,6 +8,7 @@ import PlanningFormSection from './PlanningFormSection';
 import PlanningTypeSelector from './PlanningTypeSelector';
 import PlanningDateTimePicker from './PlanningDateTimePicker';
 import PlanningTechnicianSelector from './PlanningTechnicianSelector';
+import PlanningGroupSuggestions from "./PlanningGroupSuggestions.tsx";
 
 interface NewPlanningFormProps {
   onSubmit: (planning: Partial<Planning> & { selectedTasks?: string[] }) => void;
@@ -151,7 +152,10 @@ export default function NewPlanningForm({ onSubmit, onCancel, initialValues }: N
         </div>
       </PlanningFormSection>
 
-      <div className="flex justify-end gap-3">
+        <PlanningGroupSuggestions />
+
+
+        <div className="flex justify-end gap-3">
         <button
           type="button"
           onClick={onCancel}

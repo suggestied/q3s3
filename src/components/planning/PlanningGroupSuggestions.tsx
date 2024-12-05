@@ -57,7 +57,7 @@ export default function PlanningGroupSuggestions() {
               <option value="day">24 uur</option>
               <option value="week">Deze week</option>
             </select>
-            <span className="text-sm text-blue-700 bg-blue-200 px-2 py-1 rounded-full">
+            <span className="text-sm text-blue-700 bg-blue-200 px-2 py-1 rounded-full w-52">
               {selectedTasks.length} geselecteerd
             </span>
           </div>

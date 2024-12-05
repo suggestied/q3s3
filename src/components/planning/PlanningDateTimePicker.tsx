@@ -26,7 +26,6 @@ export default function PlanningDateTimePicker({
             className="pl-9"
             required
           />
-          <Calendar className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
         </div>
       </div>
       <div>
@@ -39,7 +38,6 @@ export default function PlanningDateTimePicker({
             className="pl-9"
             required
           />
-          <Clock className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
         </div>
       </div>
     </div>
