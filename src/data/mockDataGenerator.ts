@@ -166,7 +166,7 @@ const generateInitialPlanning = (matrijzen: Matrijs[]) => {
       const matrijs = randomFromArray(matrijzen);
       planning.push({
         id: generateId('P', count),
-        matrijsId: matrijs.id,
+        mold_id: matrijs.id,
         datum: format(date, 'yyyy-MM-dd\'T\'HH:mm:ss'),
         type: 'Preventief',
         status: 'Gepland',
@@ -188,7 +188,7 @@ const generateInitialPlanning = (matrijzen: Matrijs[]) => {
     
     planning.push({
       id: generateId('P', count),
-      matrijsId: matrijs.id,
+      mold_id: matrijs.id,
       datum: date.toISOString(),
       type: Math.random() > 0.7 ? 'Correctief' : 'Preventief',
       status: ['Gepland', 'In Uitvoering', 'Voltooid'][Math.floor(Math.random() * 3)],

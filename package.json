@@ -10,13 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-hover-card": "^1.0.7",
-    "@radix-ui/react-popover": "^1.0.7",
+    "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tooltip": "^1.0.7",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.0",
+    "@supabase/supabase-js": "^2.46.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "date-fns": "^3.3.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.344.0",
@@ -30,7 +31,7 @@
     "react-virtualized-auto-sizer": "^1.0.24",
     "react-window": "^1.8.10",
     "recharts": "^2.12.2",
-    "tailwind-merge": "^2.2.1",
+    "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {

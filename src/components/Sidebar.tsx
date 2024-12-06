@@ -1,5 +1,4 @@
-import React from 'react';
-import { 
+import {
   BarChart2, 
   Activity, 
   WrenchIcon,

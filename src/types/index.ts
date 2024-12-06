@@ -17,6 +17,23 @@ export interface Machine {
   currentMatrijsId?: string;
 }
 
+export interface Mechanic {
+  id: string;
+  name: string;
+  specialization: string;
+}
+
+export interface Maintenance {
+  id: number;
+  planned_date: Date
+  mold_id: number,
+  maintenance_type: "Preventative" | "Corrective",
+  description: string,
+  assigned_to: number,
+  status: "Planned" | "Busy" | "Finished"
+  maintenance_action: string
+}
+
 export interface Matrijs {
   id: string;
   naam: string;
@@ -29,17 +46,14 @@ export interface Matrijs {
   location?: string;
 }
 
-export interface Planning {
-  id: string;
-  matrijsId: string;
-  datum: string;
-  type: 'Preventief' | 'Correctief';
-  status: 'Gepland' | 'In Uitvoering' | 'Voltooid';
-  beschrijving: string;
-  checklistItems: string[];
-  maintenanceType?: string;
-  technicianId?: string;
-  groupId?: string;
+export interface Mold {
+  id: number,
+  name: string,
+  board: number,
+  port: number,
+  description: string,
+  current_machine_id: number,
+  current_machine_name: string,
 }
 
 export interface Notification {

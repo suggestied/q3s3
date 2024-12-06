@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { DataProvider } from './context/DataContext';
 import Dashboard from './pages/Dashboard';

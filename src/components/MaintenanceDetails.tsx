@@ -69,7 +69,7 @@ export default function MaintenanceDetails({ maintenance }: MaintenanceDetailsPr
     updatePlanning({ ...maintenance, groupId: undefined });
   };
 
-  const matrijs = matrijzen.find(m => m.id === maintenance.matrijsId);
+  const matrijs = matrijzen.find(m => m.id === maintenance.mold_id);
 
   return (
     <div className="space-y-6">
@@ -151,7 +151,7 @@ export default function MaintenanceDetails({ maintenance }: MaintenanceDetailsPr
 
           <div className="p-4 space-y-3">
             {groupTasks.map(task => {
-              const taskMatrijs = matrijzen.find(m => m.id === task.matrijsId);
+              const taskMatrijs = matrijzen.find(m => m.id === task.mold_id);
               const isCurrentTask = task.id === maintenance.id;
               
               return (
@@ -221,7 +221,7 @@ export default function MaintenanceDetails({ maintenance }: MaintenanceDetailsPr
             ) : (
               <div className="space-y-3">
                 {similarTasks.map(task => {
-                  const taskMatrijs = matrijzen.find(m => m.id === task.matrijsId);
+                  const taskMatrijs = matrijzen.find(m => m.id === task.mold_id);
                   const isSelected = selectedTaskIds.includes(task.id);
                   
                   return (

@@ -69,7 +69,7 @@ export default function CalendarDay({ date, tasks, onTaskClick, getGroupedTasks 
                   ${group.length > 1 ? 'p-1 grid-cols-1' : ''}
                 `}>
                   {group.map((task) => {
-                    const matrijs = matrijzen.find(m => m.id === task.matrijsId);
+                    const matrijs = matrijzen.find(m => m.id === task.mold_id);
                     return (
                       <MaintenanceTask
                         key={task.id}

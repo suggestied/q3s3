@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { AlertTriangle, Bell, Clock, CheckCircle2, Calendar, WrenchIcon, Users, Filter, Search } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { AlertTriangle, Bell, Clock, CheckCircle2, Filter, Search } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
