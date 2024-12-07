@@ -1,6 +1,6 @@
 import {Dialog, DialogContent, DialogTrigger} from "../ui/dialog.tsx";
 import {Plus} from "lucide-react";
-import {Input} from "../ui/input.tsx";
+import {Input} from "@/components/ui/input.tsx";
 import {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {Maintenance, Mechanic, Mold} from "@/types";
 import {fetchMechanics, fetchMolds, insertNewMaintenance} from "@/lib/api.ts";
