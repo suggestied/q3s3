@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-import {Machine, Maintenance, Mechanic, Mold} from "../types";
+import {createClient} from '@supabase/supabase-js';
+import {Machine, Maintenance, MaintenanceFull, Mechanic, Mold} from "../types";
 
 // Define environment variables for security
 const SUPABASE_URL = "https://supa.q3.sug.lol"
@@ -14,10 +14,10 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
 export const fetchMachines = async (): Promise<Machine[]> => {
-    const { data, error } = await supabase
+    const {data, error} = await supabase
         .from('v_machine_status')
         .select('*')
-        .order('status', { ascending: false });
+        .order('status', {ascending: false});
 
     if (error) {
         throw new Error(`Error fetching machine timelines: ${error.message}`);
@@ -27,7 +27,7 @@ export const fetchMachines = async (): Promise<Machine[]> => {
 };
 
 export async function fetchMechanics(): Promise<Mechanic[]> {
-    const { data, error } = await supabase
+    const {data, error} = await supabase
         .from('i_mechanics')
         .select('*');
 
@@ -39,7 +39,7 @@ export async function fetchMechanics(): Promise<Mechanic[]> {
 }
 
 export async function fetchMolds(): Promise<Mold[]> {
-    const { data, error } = await supabase
+    const {data, error} = await supabase
         .from('v_molds')
         .select('*');
 
@@ -50,10 +50,13 @@ export async function fetchMolds(): Promise<Mold[]> {
     return data || []
 }
 
-export async function fetchMaintenance(): Promise<Maintenance[]> {
-    const { data, error } = await supabase
-        .from('i_maintenance')
-        .select('*');
+export async function fetchMaintenance(from: Date | null = null, to: Date | null = null): Promise<MaintenanceFull[]> {
+    from = from == null ? new Date(0) : from
+    to = to == null ? new Date(999999999999) : to
+
+    const {data, error} = await supabase
+        .from('v_maintenance')
+        .select('*').lt("planned_date", to.toISOString()).gt("planned_date", from.toISOString())
 
     if (error) {
         throw new Error(`Error fetching mechanics: ${error.message}`);
@@ -65,14 +68,14 @@ export async function fetchMaintenance(): Promise<Maintenance[]> {
 export async function insertNewMaintenance(maintenance: Omit<Maintenance, "id" | "status">) {
 
     // @ts-expect-error asd
-    if (maintenance["maintenance_type"] == "Correctief"){
+    if (maintenance["maintenance_type"] == "Correctief") {
         maintenance["maintenance_type"] = "Corrective"
         // @ts-expect-error asd
-    } else if (maintenance["maintenance_type"] == "Preventatief"){
+    } else if (maintenance["maintenance_type"] == "Preventatief") {
         maintenance["maintenance_type"] = "Preventative"
     }
 
-    const { error } = await supabase
+    const {error} = await supabase
         .from('i_maintenance_plans')
         .insert(maintenance)
 
