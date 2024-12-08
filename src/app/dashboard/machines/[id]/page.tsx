@@ -23,6 +23,14 @@ import { Machine, MachineTimeline } from "@/types/supabase";
 import StatusIndicator from "@/components/timeline/StatusIndicator";
 import { SelectStartEndDate } from "@/components/SelectStartEndDate";
 import { DateRange } from "react-day-picker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 
 const chartConfig: ChartConfig = {
   average_shot_time: { label: "Average Shot Time", color: "hsl(100, 70%, 50%)" },
@@ -33,6 +41,8 @@ const MachinePage = () => {
   const { id } = useParams();
   const [machine, setMachine] = useState<Machine | null>(null);
   const [chartData, setChartData] = useState<MachineTimeline[]>([]);
+  // set interval
+  const [interval, setInterval] = useState<"minute" | "hour" | "day">("hour");
 
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(2020, 8, 0),
@@ -62,7 +72,7 @@ const MachinePage = () => {
           machineData.port,
           startDate,
           endDate,
-          "hour"
+          interval
         );
         setChartData(
           data
@@ -75,7 +85,7 @@ const MachinePage = () => {
     };
 
     loadData();
-  }, [id, date]);
+  }, [id, date, interval]);
 
   if (!machine) {
     return <div>Loading...</div>;
@@ -91,11 +101,27 @@ const MachinePage = () => {
             <StatusIndicator status={machine.status} />
             Status: {machine.status}</CardDescription>
         </div>
-        <SelectStartEndDate
+       <div className="flex items-center gap-2">
+       <SelectStartEndDate
           date={date}
          setDate={setDate}
          className="w-min"
         />
+        
+        <Select onValueChange={(value) => setInterval(value as "minute" | "hour" | "day")} value={interval}>
+          <SelectTrigger>
+            <SelectValue defaultValue={"hour"}>
+              
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="minute">Minute</SelectItem>
+            <SelectItem value="hour" >Hour</SelectItem>
+            <SelectItem value="day">Day</SelectItem>
+          </SelectContent>
+        </Select>
+
+       </div>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer
