@@ -16,8 +16,8 @@ interface RowsProps {
 export default function Rows({ machines }: RowsProps) {
 
     const [date, setDate] = useState<DateRange | undefined>({
-        from: addDays(new Date(), -7),
-        to: new Date(),
+        from: new Date(2020, 8, 15),
+        to: new Date(2020, 8, 17),
       })
 
   return (
@@ -39,6 +39,8 @@ export default function Rows({ machines }: RowsProps) {
           key={machine.machine_id} 
           machine={machine} 
           targetEfficiency={0} 
+            date={date}
+            setDate={setDate}
         />
       ))}
       </div>
