@@ -12,17 +12,20 @@ const TARGET_PHONE_NUMBER = "+31610100232"; // Recipient phone number
 Deno.serve(async (req) => {
   // log that we received a request
   console.log("Received request:", req);
-  if (req.method !== "POST") {
-    return new Response("Only POST requests are accepted", { status: 405 });
+  if (req.method !== "GET") {
+    return new Response("Method not allowed", { status: 405 });
   }
 
   try {
-    // Parse the payload from pg_notify
-    const payload = await req.json();
-    console.log("Received notification payload:", payload);
+    // Parse the query string parameters
+    const params = new URL(req.url).searchParams;
 
-    // Extract the relevant fields from the payload
-    const { id, status, message, detected_at } = payload;
+    // Extract the notification details
+    const id = params.get("id");
+    const status = params.get("status");
+    const message = params.get("message");
+    const detected_at = params.get("detected_at");
+    
 
     // Create the SMS message body
     const smsMessage = `
